@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Shuffle, Plus, Pencil, Trash2, X, Check, AlertTriangle, ChevronDown, ChevronUp, Download, ExternalLink } from "./icons.jsx";
 import STARTER from "./cs2-startbibliotek.json";
-import { suggestLineupLinks, catalogStats } from "./lineupMatch.js";
+import { suggestLineupLinks, CATALOG_SIZE } from "./lineupMatch.js";
 
-const DEFAULT_MAPS = ["Dust II", "Mirage", "Inferno", "Nuke", "Ancient", "Anubis", "Cache"];
+const DEFAULT_MAPS =
+  Array.isArray(STARTER.maps) && STARTER.maps.length
+    ? STARTER.maps
+    : ["Dust II", "Mirage", "Inferno", "Nuke", "Ancient", "Anubis", "Cache"];
 const STORAGE_KEY = "cs2-callout-book";
 const BACKUP_KEY = "cs2-callout-book-skadet";
 const FREEZE_SECONDS = 15;
@@ -23,6 +26,35 @@ async function storageSet(key, value) {
 
 function stratKey(s) {
   return [s.map, s.side, s.site || "", (s.callout || "").trim().toLowerCase(), (s.calloutEn || "").trim().toLowerCase()].join("|");
+}
+
+function buildSessionState({
+  tab,
+  selectedMap,
+  selectedSide,
+  siteFilter,
+  roundFilter,
+  includePractice,
+  currentPick,
+  logged,
+  timerEndsAt,
+}) {
+  return {
+    tab,
+    selectedMap,
+    selectedSide,
+    siteFilter,
+    roundFilter,
+    includePractice,
+    currentPickId: currentPick?.id || null,
+    logged: logged || null,
+    timerEndsAt,
+    calledAt: currentPick?.calledAt || null,
+  };
+}
+
+function buildPersistedState({ maps, strats, history, lang, session }) {
+  return { version: SCHEMA_VERSION, maps, strats, history, lang, session };
 }
 
 const C = {
@@ -107,8 +139,6 @@ const UI = {
     linkUrlPh: "https://…",
     addLink: "+ Lenke",
     suggestLinks: "Foreslå fra CSNADES",
-    linksSuggested: (n) => (n === 1 ? "La til 1 lineup-lenke." : `La til ${n} lineup-lenker.`),
-    openLineups: "Lineups",
     targetLabel: "Mål",
     roundsLabel: "Runder (ingen valgt = passer alle)",
     statusLabel: "Status",
@@ -130,7 +160,6 @@ const UI = {
     linksCount: (n) => (n === 1 ? "1 lineup" : `${n} lineups`),
     tapToExpand: "Trykk for detaljer",
     emptyMatchHint: "Ingen strats i boka ennå. Åpne Boka for å legge til, eller last startbiblioteket.",
-    usingStarter: "Starterbibliotek lastet",
     restoreStarter: "Last inn manglende starter-strats",
     replaceStarter: "Erstatt boka med starterbiblioteket",
     replaceStarterConfirm: "Erstatte hele boka?",
@@ -143,7 +172,6 @@ const UI = {
     add: "Legg til",
     starterLabel: "Startbibliotek",
     starterDesc: (n) => `${n} strats klare. Nye installasjoner får dem automatisk. Lineups fra CSNADES.gg.`,
-    loadStarter: "Fyll manglende",
     starterDone: (n) => `La til ${n} strats.`,
     catalogHint: (n) => `${n} CSNADES-lineups i katalogen.`,
     resetLabel: "Nullstill hele boka",
@@ -202,8 +230,6 @@ const UI = {
     linkUrlPh: "https://…",
     addLink: "+ Link",
     suggestLinks: "Suggest from CSNADES",
-    linksSuggested: (n) => (n === 1 ? "Added 1 lineup link." : `Added ${n} lineup links.`),
-    openLineups: "Lineups",
     targetLabel: "Target",
     roundsLabel: "Rounds (none selected = fits all)",
     statusLabel: "Status",
@@ -225,7 +251,6 @@ const UI = {
     linksCount: (n) => (n === 1 ? "1 lineup" : `${n} lineups`),
     tapToExpand: "Tap for details",
     emptyMatchHint: "No strats in the book yet. Open Book to add some, or restore the starter library.",
-    usingStarter: "Starter library loaded",
     restoreStarter: "Add missing starter strats",
     replaceStarter: "Replace book with starter library",
     replaceStarterConfirm: "Replace the whole book?",
@@ -238,7 +263,6 @@ const UI = {
     add: "Add",
     starterLabel: "Starter library",
     starterDesc: (n) => `${n} strats ready. New installs get them automatically. Lineups from CSNADES.gg.`,
-    loadStarter: "Add missing",
     starterDone: (n) => `Added ${n} strats.`,
     catalogHint: (n) => `${n} CSNADES lineups in the catalog.`,
     resetLabel: "Reset the whole book",
@@ -371,7 +395,10 @@ export default function CalloutBook() {
   const [secondsLeft, setSecondsLeft] = useState(null);
   const [timerEndsAt, setTimerEndsAt] = useState(null);
   const timerRef = useRef(null);
+  // Blocks filter-change clears during hydrate / useInMatch / full backup restore
   const suppressClearRef = useRef(true);
+  const persistPendingRef = useRef(null);
+  const persistWritingRef = useRef(false);
 
   const [showForm, setShowForm] = useState(false);
   const [formLang, setFormLang] = useState("en");
@@ -448,8 +475,9 @@ export default function CalloutBook() {
 
   useEffect(() => {
     (async () => {
+      let res = null;
       try {
-        const res = await storageGet(STORAGE_KEY);
+        res = await storageGet(STORAGE_KEY);
         if (res && res.value) {
           const data = JSON.parse(res.value);
           const m = Array.isArray(data.maps) && data.maps.length ? data.maps : DEFAULT_MAPS;
@@ -468,7 +496,7 @@ export default function CalloutBook() {
             setSelectedMap(m[0]);
           }
         } else {
-          const starterMaps = Array.isArray(STARTER.maps) && STARTER.maps.length ? STARTER.maps : DEFAULT_MAPS;
+          const starterMaps = DEFAULT_MAPS;
           setMaps(starterMaps);
           setStrats(buildStarterStrats());
           setSelectedMap(starterMaps[0]);
@@ -477,8 +505,7 @@ export default function CalloutBook() {
         }
       } catch (e) {
         try {
-          const raw = window.localStorage.getItem(STORAGE_KEY);
-          if (raw) window.localStorage.setItem(BACKUP_KEY, raw);
+          if (res?.value) await storageSet(BACKUP_KEY, res.value);
         } catch (_) {
           // nothing to salvage
         }
@@ -494,36 +521,52 @@ export default function CalloutBook() {
     return () => clearInterval(timerRef.current);
   }, []);
 
-  const persist = useCallback(async (next) => {
-    try {
-      const ok = await storageSet(STORAGE_KEY, JSON.stringify(next));
-      setSaveError(!ok);
-    } catch (e) {
-      setSaveError(true);
+  const flushPersist = useCallback(async () => {
+    if (persistWritingRef.current) return;
+    while (persistPendingRef.current) {
+      const next = persistPendingRef.current;
+      persistPendingRef.current = null;
+      persistWritingRef.current = true;
+      try {
+        const ok = await storageSet(STORAGE_KEY, JSON.stringify(next));
+        setSaveError(!ok);
+      } catch (e) {
+        setSaveError(true);
+      } finally {
+        persistWritingRef.current = false;
+      }
     }
   }, []);
 
+  const persist = useCallback(
+    (next) => {
+      persistPendingRef.current = next;
+      flushPersist();
+    },
+    [flushPersist]
+  );
+
   useEffect(() => {
     if (!loaded) return;
-    persist({
-      version: SCHEMA_VERSION,
-      maps,
-      strats,
-      history,
-      lang,
-      session: {
-        tab,
-        selectedMap,
-        selectedSide,
-        siteFilter,
-        roundFilter,
-        includePractice,
-        currentPickId: currentPick?.id || null,
-        logged: logged || null,
-        timerEndsAt,
-        calledAt: currentPick?.calledAt || null,
-      },
-    });
+    persist(
+      buildPersistedState({
+        maps,
+        strats,
+        history,
+        lang,
+        session: buildSessionState({
+          tab,
+          selectedMap,
+          selectedSide,
+          siteFilter,
+          roundFilter,
+          includePractice,
+          currentPick,
+          logged,
+          timerEndsAt,
+        }),
+      })
+    );
   }, [
     maps,
     strats,
@@ -547,9 +590,6 @@ export default function CalloutBook() {
     setCurrentPick(null);
     setLogged(null);
     clearTimer();
-    setConfirmDelete(null);
-    setBookQuery("");
-    setExpandedId(null);
   }, [selectedMap, selectedSide, siteFilter, roundFilter, includePractice]);
 
   const isT = selectedSide === "T";
@@ -577,6 +617,11 @@ export default function CalloutBook() {
         { id: "default", label: t.groupDefault, items: bookList.filter((s) => !s.site || s.site === "default") },
       ].filter((g) => g.items.length)
     : [{ id: "ct", label: t.groupCT, items: bookList }].filter((g) => g.items.length);
+
+  const pickCallout = currentPick ? pickText(currentPick, "callout", lang) : "";
+  const pickDescription = currentPick ? pickText(currentPick, "description", lang) : "";
+  const pickTaskList = currentPick ? pickTasks(currentPick, lang) : [];
+  const pickLinks = currentPick?.links || [];
 
   const recent = history.filter((h) => h.map === selectedMap && h.side === selectedSide).slice(0, 6);
   const run = recent.slice(0, 5).filter((h) => h.site);
@@ -627,10 +672,6 @@ export default function CalloutBook() {
     const p = pickRandom(currentPick ? currentPick.id : null);
     if (!p) return;
     commitCall(p);
-  }
-
-  function handlePickStrat(strat) {
-    commitCall(strat);
   }
 
   function useInMatch(strat) {
@@ -796,7 +837,7 @@ export default function CalloutBook() {
   }
 
   function replaceWithStarter() {
-    const starterMaps = Array.isArray(STARTER.maps) && STARTER.maps.length ? STARTER.maps : DEFAULT_MAPS;
+    const starterMaps = DEFAULT_MAPS;
     setMaps(starterMaps);
     setStrats(buildStarterStrats());
     setHistory([]);
@@ -811,30 +852,28 @@ export default function CalloutBook() {
     setTransferMsg(t.exportMsg);
   }
 
-  function buildFullBackup() {
-    return {
-      version: SCHEMA_VERSION,
+  function currentSnapshot() {
+    return buildPersistedState({
       maps,
       strats,
       history,
       lang,
-      session: {
+      session: buildSessionState({
         tab,
         selectedMap,
         selectedSide,
         siteFilter,
         roundFilter,
         includePractice,
-        currentPickId: currentPick?.id || null,
-        logged: logged || null,
+        currentPick,
+        logged,
         timerEndsAt,
-        calledAt: currentPick?.calledAt || null,
-      },
-    };
+      }),
+    });
   }
 
   function doBackupExport() {
-    setTransferText(JSON.stringify(buildFullBackup(), null, 1));
+    setTransferText(JSON.stringify(currentSnapshot(), null, 1));
     setTransferMsg(t.exportMsg);
   }
 
@@ -842,9 +881,9 @@ export default function CalloutBook() {
     try {
       const data = JSON.parse(transferText);
       if (!Array.isArray(data.strats)) throw new Error("no strats");
-      const isFullBackup = Array.isArray(data.history) || data.session || data.lang;
+      const isFullBackup = Array.isArray(data.history) || !!data.session;
 
-      if (isFullBackup && (data.history || data.session)) {
+      if (isFullBackup) {
         suppressClearRef.current = true;
         const m = Array.isArray(data.maps) && data.maps.length ? data.maps : DEFAULT_MAPS;
         const s = data.strats.map((x) => migrate(x));
@@ -1145,18 +1184,18 @@ export default function CalloutBook() {
                           marginBottom: 12,
                         }}
                       >
-                        {pickText(currentPick, "callout", lang)}
+                        {pickCallout}
                       </div>
 
-                      {pickText(currentPick, "description", lang) && (
+                      {pickDescription && (
                         <p style={{ margin: "0 0 10px", fontSize: 14, lineHeight: 1.5, color: "#B4BAC2" }}>
-                          {pickText(currentPick, "description", lang)}
+                          {pickDescription}
                         </p>
                       )}
 
-                      {pickTasks(currentPick, lang).length > 0 && (
+                      {pickTaskList.length > 0 && (
                         <div style={{ borderLeft: `2px solid ${sc.accent}`, paddingLeft: 10, marginBottom: 12 }}>
-                          {pickTasks(currentPick, lang).map((x, i) => (
+                          {pickTaskList.map((x, i) => (
                             <p key={i} style={{ margin: "0 0 3px", fontSize: 13, color: "#B4BAC2", fontFamily: MONO }}>
                               {x}
                             </p>
@@ -1164,9 +1203,9 @@ export default function CalloutBook() {
                         </div>
                       )}
 
-                      {(currentPick.links || []).length > 0 && (
+                      {pickLinks.length > 0 && (
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
-                          {(currentPick.links || []).map((link, i) => (
+                          {pickLinks.map((link, i) => (
                             <a
                               key={i}
                               href={link.url}
@@ -1251,7 +1290,7 @@ export default function CalloutBook() {
                         return (
                           <button
                             key={s.id}
-                            onClick={() => handlePickStrat(s)}
+                            onClick={() => commitCall(s)}
                             style={{
                               textAlign: "left",
                               background: C.panel,
@@ -1673,7 +1712,7 @@ export default function CalloutBook() {
 
                     {eyebrow(t.starterLabel, { marginBottom: 6 })}
                     <p style={{ margin: "0 0 8px", fontSize: 12, color: C.dim, lineHeight: 1.5 }}>{t.starterDesc(STARTER.strats.length)}</p>
-                    <p style={{ margin: "0 0 8px", fontSize: 11, color: C.faint }}>{t.catalogHint(catalogStats().total)}</p>
+                    <p style={{ margin: "0 0 8px", fontSize: 11, color: C.faint }}>{t.catalogHint(CATALOG_SIZE)}</p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                       <button onClick={loadStarter} style={{ ...pill, fontSize: 11, padding: "8px 14px", border: `1px solid ${sc.accent}`, background: sc.soft, color: sc.accent, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
                         <Download size={13} /> {t.restoreStarter}

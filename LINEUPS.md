@@ -6,7 +6,7 @@
 
 | Kilde | Dekning | Stabile deep-links | Egnet for AI/auto |
 |---|---|---|---|
-| **CSNADES.gg** | ~1370+ nades (933 smokes m.m.) | `/{map}/{type}/{slug}` | Ja |
+| **CSNADES.gg** | Site-wide 1000+; our snapshot ~566 on 7 maps | `/{map}/{type}/{slug}` | Ja |
 | cs2util.com | God, interaktivt kart | Svakere per-nade URL | Nei |
 | lineups.gg | ~200 | Begrenset | Delvis |
 | csdb.gg | ~118 | Delvis | Delvis |
@@ -38,7 +38,7 @@ Kartnavn i appen → slug: `Dust II` → `dust2`.
 
 ## Lokal katalog
 
-`src/csnades-catalog.json` er et snapshot av offentlige CSNADES-sider (~566 nades for våre sju kart).
+`src/csnades-catalog.json` er et **manuelt snapshot** av offentlige CSNADES-sider (~566 nades for våre sju kart). Landing-/type-aliaser for auto-forslag ligger i `src/lineupMatch.js` (ikke i katalog-JSON).
 
 `src/lineupMatch.js` foreslår lenker ut fra callout + tasks (norsk/engelsk).
 
@@ -74,7 +74,7 @@ Eksempel-payload:
 
 ## Oppdatere katalogen
 
-Last ned kartsidene fra CSNADES på nytt og regenerer `csnades-catalog.json` når kart patches endrer lineups. Sjekk alltid at URL-ene svarer 200.
+Det finnes **ingen** auto-regen-script ennå. Oppdater `csnades-catalog.json` manuelt når CS2-patches endrer lineups (scrape/public pages → samme JSON-shape). Kjør deretter `npm run starter` for å validere at starter-URL-ene fortsatt finnes i katalogen.
 
 ## Designregel
 

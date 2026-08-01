@@ -1,5 +1,3 @@
-import React from "react";
-
 function Icon({ size = 16, children, ...props }) {
   return (
     <svg

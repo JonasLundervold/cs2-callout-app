@@ -198,12 +198,5 @@ export function suggestLineupLinks(strat, { limit = 5, side } = {}) {
   return out;
 }
 
-export function catalogStats() {
-  const byMap = {};
-  for (const n of CATALOG.nades) {
-    byMap[n.map] = (byMap[n.map] || 0) + 1;
-  }
-  return { source: CATALOG.source, total: CATALOG.nades.length, byMap };
-}
-
-export { CATALOG, mapSlug };
+/** Snapshot size for settings hint — aliases for matching live in this file, not catalog JSON. */
+export const CATALOG_SIZE = CATALOG.nades.length;

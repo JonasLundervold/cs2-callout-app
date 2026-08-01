@@ -2,7 +2,7 @@
 
 Minimal Vite/React app for IGLs: pick map, side, site and round type, get a fast call during freeze time, log the result after the round.
 
-English is the default language. Norwegian is available in the header. New installs come with a starter library pre-loaded; you can replace or extend it from Book → settings.
+English is the default language. Norwegian is available in the header. New installs come with a starter library (~70 well-known executes + CSNADES links) pre-loaded; replace or extend it from Book → settings. Rebuild with `npm run starter`.
 
 ## Run locally
 

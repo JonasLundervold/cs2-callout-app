@@ -45,6 +45,16 @@ Each strat must work as a **15-second freeze-time call** on a phone. Prefer clar
 - Mix of full / force / eco / pistol where it makes sense
 - Defaults and mid control, not only site executes
 - Quality over volume — cut vague or duplicate callouts
+- Prefer well-known executes (BLAST / standard meta) with CSNADES URLs that exist in `csnades-catalog.json`
+
+## Regenerating the starter file
+
+```bash
+npm run starter
+```
+
+Writes `src/cs2-startbibliotek.json` and **fails** if any lineup URL is missing from the catalog.
+Existing installs: Book → settings → **Replace book with starter library** (or add missing only).
 
 ## Storage schema
 
