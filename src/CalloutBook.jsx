@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Shuffle, Plus, Pencil, Trash2, X, Check, AlertTriangle, ChevronDown, ChevronUp, Download, ExternalLink } from "./icons.jsx";
 import STARTER from "./cs2-startbibliotek.json";
+import { suggestLineupLinks, catalogStats } from "./lineupMatch.js";
 
 const DEFAULT_MAPS = ["Dust II", "Mirage", "Inferno", "Nuke", "Ancient", "Anubis", "Cache"];
 const STORAGE_KEY = "cs2-callout-book";
@@ -88,6 +89,8 @@ const UI = {
     linkLabelPh: "Xbox-røyk",
     linkUrlPh: "https://…",
     addLink: "+ Lenke",
+    suggestLinks: "Foreslå fra CSNADES",
+    linksSuggested: (n) => (n === 1 ? "La til 1 lineup-lenke." : `La til ${n} lineup-lenker.`),
     openLineups: "Lineups",
     targetLabel: "Mål",
     roundsLabel: "Runder (ingen valgt = passer alle)",
@@ -107,9 +110,10 @@ const UI = {
     newMapPh: "Nytt kart",
     add: "Legg til",
     starterLabel: "Startbibliotek",
-    starterDesc: (n) => `${n} enkle strats for alle sju active duty-kart, på norsk og engelsk.`,
+    starterDesc: (n) => `${n} enkle strats for alle sju active duty-kart, på norsk og engelsk. Lineup-lenker fra CSNADES.gg.`,
     loadStarter: "Fyll boka",
     starterDone: (n) => `La til ${n} strats.`,
+    catalogHint: (n) => `${n} CSNADES-lineups i katalogen.`,
     shareLabel: "Del med laget",
     exportBtn: "Hent ut",
     importBtn: "Legg inn",
@@ -156,6 +160,8 @@ const UI = {
     linkLabelPh: "Xbox smoke",
     linkUrlPh: "https://…",
     addLink: "+ Link",
+    suggestLinks: "Suggest from CSNADES",
+    linksSuggested: (n) => (n === 1 ? "Added 1 lineup link." : `Added ${n} lineup links.`),
     openLineups: "Lineups",
     targetLabel: "Target",
     roundsLabel: "Rounds (none selected = fits all)",
@@ -175,9 +181,10 @@ const UI = {
     newMapPh: "New map",
     add: "Add",
     starterLabel: "Starter library",
-    starterDesc: (n) => `${n} simple strats for all seven active duty maps, in Norwegian and English.`,
+    starterDesc: (n) => `${n} simple strats for all seven active duty maps, in Norwegian and English. Lineup links from CSNADES.gg.`,
     loadStarter: "Fill the book",
     starterDone: (n) => `Added ${n} strats.`,
+    catalogHint: (n) => `${n} CSNADES lineups in the catalog.`,
     shareLabel: "Share with the team",
     exportBtn: "Export",
     importBtn: "Import",
@@ -500,6 +507,22 @@ export default function CalloutBook() {
 
   function save() {
     if (!fCallout.trim() && !fCalloutEn.trim()) return;
+    let links = fLinks.map(migrateLink).filter(Boolean);
+    if (!links.length) {
+      links = suggestLineupLinks(
+        {
+          map: selectedMap,
+          side: selectedSide,
+          callout: fCallout,
+          calloutEn: fCalloutEn,
+          description: fDesc,
+          descriptionEn: fDescEn,
+          tasks: fTasks,
+          tasksEn: fTasksEn,
+        },
+        { side: selectedSide, limit: 5 }
+      );
+    }
     const payload = {
       callout: fCallout.trim(),
       calloutEn: fCalloutEn.trim(),
@@ -509,7 +532,7 @@ export default function CalloutBook() {
       status: fStatus,
       tasks: fTasks.map((x) => x.trim()),
       tasksEn: fTasksEn.map((x) => x.trim()),
-      links: fLinks.map(migrateLink).filter(Boolean),
+      links,
     };
     if (editingId) {
       setStrats((prev) =>
@@ -542,11 +565,48 @@ export default function CalloutBook() {
     setFLinks((p) => p.filter((_, j) => j !== i));
   }
 
+  function applySuggestedLinks({ replace = false } = {}) {
+    const draft = {
+      map: selectedMap,
+      side: selectedSide,
+      callout: fCallout,
+      calloutEn: fCalloutEn,
+      description: fDesc,
+      descriptionEn: fDescEn,
+      tasks: fTasks,
+      tasksEn: fTasksEn,
+    };
+    const suggested = suggestLineupLinks(draft, { side: selectedSide, limit: 5 });
+    if (!suggested.length) {
+      setStarterMsg("");
+      return 0;
+    }
+    setFLinks((prev) => {
+      const base = replace ? [] : prev;
+      const existing = new Set(base.map((l) => safeHttpUrl(l.url)).filter(Boolean));
+      const merged = [...base];
+      for (const s of suggested) {
+        if (existing.has(s.url)) continue;
+        merged.push({ label: s.label, labelEn: s.labelEn, url: s.url });
+        existing.add(s.url);
+        if (merged.length >= 5) break;
+      }
+      return merged;
+    });
+    return suggested.length;
+  }
+
   function loadStarter() {
     const existing = new Set(strats.map(stratKey));
     const incoming = STARTER.strats
       .filter((s) => !existing.has(stratKey(s)))
-      .map((s) => migrate({ ...s, id: uid() }));
+      .map((s) => {
+        const base = migrate({ ...s, id: uid() });
+        if (!base.links.length) {
+          base.links = suggestLineupLinks(base, { side: base.side, limit: 5 });
+        }
+        return base;
+      });
     setMaps((prev) => Array.from(new Set([...prev, ...STARTER.maps])));
     if (incoming.length) setStrats((prev) => [...prev, ...incoming]);
     setStarterMsg(t.starterDone(incoming.length));
@@ -1080,10 +1140,16 @@ export default function CalloutBook() {
                       </div>
                     ))}
                     {fLinks.length < 5 && (
-                      <button onClick={addLinkRow} style={{ ...pill, fontSize: 11, padding: "5px 10px", background: "transparent", border: `1px dashed ${C.line}`, color: C.dim, cursor: "pointer", marginBottom: 12 }}>
+                      <button onClick={addLinkRow} style={{ ...pill, fontSize: 11, padding: "5px 10px", background: "transparent", border: `1px dashed ${C.line}`, color: C.dim, cursor: "pointer", marginBottom: 8, marginRight: 6 }}>
                         {t.addLink}
                       </button>
                     )}
+                    <button
+                      onClick={() => applySuggestedLinks({ replace: fLinks.length === 0 })}
+                      style={{ ...pill, fontSize: 11, padding: "5px 10px", background: sc.soft, border: `1px solid ${sc.accent}`, color: sc.accent, cursor: "pointer", marginBottom: 12 }}
+                    >
+                      {t.suggestLinks}
+                    </button>
 
                     {isT && (
                       <>
@@ -1279,6 +1345,7 @@ export default function CalloutBook() {
                   <div style={{ background: C.panel, border: `1px solid ${C.line}`, padding: 14 }}>
                     {eyebrow(t.starterLabel, { marginBottom: 6 })}
                     <p style={{ margin: "0 0 8px", fontSize: 12, color: C.dim, lineHeight: 1.5 }}>{t.starterDesc(STARTER.strats.length)}</p>
+                    <p style={{ margin: "0 0 8px", fontSize: 11, color: C.faint }}>{t.catalogHint(catalogStats().total)}</p>
                     <button onClick={loadStarter} style={{ ...pill, fontSize: 11, padding: "8px 14px", border: `1px solid ${sc.accent}`, background: sc.soft, color: sc.accent, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
                       <Download size={13} /> {t.loadStarter}
                     </button>

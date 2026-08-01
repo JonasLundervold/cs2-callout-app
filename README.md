@@ -24,4 +24,8 @@ Bygget ligger i `dist/`.
 
 Push til `main` deployer automatisk via GitHub Actions. Se [GITHUB-PAGES.md](./GITHUB-PAGES.md) for oppsett.
 
+## Lineups
+
+Utility-lenker bruker [CSNADES.gg](https://csnades.gg/) som kanonisk kilde. Se [LINEUPS.md](./LINEUPS.md) — også ment som kontekst for Claude/ChatGPT når nye strats skrives.
+
 Data lagres i nettleserens `localStorage`. Det betyr at data er private for hver nettleser/enhet. Bruk eksport/import i appen for å flytte en bok mellom lagkamerater.

@@ -1,7 +1,7 @@
 {
   "name": "Startbibliotek / Starter library",
-  "version": 1,
-  "note": "Enkle, velprovde strats for CS2 active duty. Rediger fritt. Importeres i appen under Boka > Kart, deling og nullstilling > Legg inn.",
+  "version": 2,
+  "note": "Enkle, velprøvde strats for CS2. Lineup-lenker peker til CSNADES.gg (se LINEUPS.md).",
   "maps": [
     "Dust II",
     "Mirage",
@@ -37,6 +37,33 @@
         "Smoke 3: Stairs",
         "Molly firebox, entry through Palace",
         "Last man holds Ramp for Con"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Ticket Booth",
+          "labelEn": "Smoke: Ticket Booth",
+          "url": "https://csnades.gg/mirage/smokes/ticket-booth-from-a-ramp"
+        },
+        {
+          "label": "Røyk: Jungle",
+          "labelEn": "Smoke: Jungle",
+          "url": "https://csnades.gg/mirage/smokes/jungle-from-a-ramp"
+        },
+        {
+          "label": "Røyk: Stairs",
+          "labelEn": "Smoke: Stairs",
+          "url": "https://csnades.gg/mirage/smokes/stairs-from-a-ramp"
+        },
+        {
+          "label": "Røyk: Palace",
+          "labelEn": "Smoke: Palace",
+          "url": "https://csnades.gg/mirage/smokes/palace-from-ct-spawn"
+        },
+        {
+          "label": "Molly: Firebox",
+          "labelEn": "Molly: Firebox",
+          "url": "https://csnades.gg/mirage/molotovs/firebox-from-stairs"
+        }
       ]
     },
     {
@@ -62,6 +89,33 @@
         "Two smokes on catwalk",
         "Molly van",
         "Entry through apps, not short"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Market Window",
+          "labelEn": "Smoke: Market Window",
+          "url": "https://csnades.gg/mirage/smokes/market-window-from-back-alley"
+        },
+        {
+          "label": "Røyk: Market Door",
+          "labelEn": "Smoke: Market Door",
+          "url": "https://csnades.gg/mirage/smokes/market-door-from-back-alley"
+        },
+        {
+          "label": "Røyk: Catwalk",
+          "labelEn": "Smoke: Catwalk",
+          "url": "https://csnades.gg/mirage/smokes/catwalk-from-t-spawn"
+        },
+        {
+          "label": "Molly: Van",
+          "labelEn": "Molly: Van",
+          "url": "https://csnades.gg/mirage/molotovs/van-from-b-apts"
+        },
+        {
+          "label": "Røyk: B Short",
+          "labelEn": "Smoke: B Short",
+          "url": "https://csnades.gg/mirage/smokes/b-short-from-back-alley"
+        }
       ]
     },
     {
@@ -86,6 +140,18 @@
         "Smoke window",
         "Molly connector",
         "Two in top mid, three wait for call"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Market Window",
+          "labelEn": "Smoke: Market Window",
+          "url": "https://csnades.gg/mirage/smokes/market-window-from-back-alley"
+        },
+        {
+          "label": "Røyk: Connector",
+          "labelEn": "Smoke: Connector",
+          "url": "https://csnades.gg/mirage/smokes/connector-from-t-spawn"
+        }
       ]
     },
     {
@@ -109,6 +175,23 @@
         "Two take control via connector",
         "Three stack in Palace",
         "Go on a count of three"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Connector",
+          "labelEn": "Smoke: Connector",
+          "url": "https://csnades.gg/mirage/smokes/connector-from-t-spawn"
+        },
+        {
+          "label": "Røyk: Palace",
+          "labelEn": "Smoke: Palace",
+          "url": "https://csnades.gg/mirage/smokes/palace-from-ct-spawn"
+        },
+        {
+          "label": "Røyk: A Ramp",
+          "labelEn": "Smoke: A Ramp",
+          "url": "https://csnades.gg/mirage/smokes/a-ramp-from-ct-spawn"
+        }
       ]
     },
     {
@@ -132,6 +215,18 @@
         "One in palace",
         "Two in mid",
         "One holds ramp"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Palace",
+          "labelEn": "Smoke: Palace",
+          "url": "https://csnades.gg/mirage/smokes/palace-from-ct-spawn"
+        },
+        {
+          "label": "Røyk: A Ramp",
+          "labelEn": "Smoke: A Ramp",
+          "url": "https://csnades.gg/mirage/smokes/a-ramp-from-ct-spawn"
+        }
       ]
     },
     {
@@ -156,7 +251,8 @@
         "No smoke, just speed",
         "First man throws flash in",
         "Plant default"
-      ]
+      ],
+      "links": []
     },
     {
       "map": "Mirage",
@@ -172,7 +268,8 @@
       ],
       "status": "ready",
       "tasks": [],
-      "tasksEn": []
+      "tasksEn": [],
+      "links": []
     },
     {
       "map": "Mirage",
@@ -193,6 +290,13 @@
       "tasksEn": [
         "Flash first",
         "Fall back after 15 sec regardless"
+      ],
+      "links": [
+        {
+          "label": "Flash: Connector",
+          "labelEn": "Flash: Connector",
+          "url": "https://csnades.gg/mirage/flashbangs/connector-from-top-mid-boxes"
+        }
       ]
     },
     {
@@ -218,6 +322,23 @@
         "Smoke CT and coffins",
         "Flash over for entry",
         "One holds mid for flank"
+      ],
+      "links": [
+        {
+          "label": "Flash: Banana",
+          "labelEn": "Flash: Banana",
+          "url": "https://csnades.gg/inferno/flashbangs/banana-from-t-spawn"
+        },
+        {
+          "label": "Røyk: Coffins",
+          "labelEn": "Smoke: Coffins",
+          "url": "https://csnades.gg/inferno/smokes/coffins-from-banana"
+        },
+        {
+          "label": "Molly: Car",
+          "labelEn": "Molly: Car",
+          "url": "https://csnades.gg/inferno/molotovs/car-from-bottom-banana"
+        }
       ]
     },
     {
@@ -243,6 +364,23 @@
         "Molly pit",
         "Popflash over the roof from apps",
         "Entry through balcony"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Library",
+          "labelEn": "Smoke: Library",
+          "url": "https://csnades.gg/inferno/smokes/library-from-alt-mid"
+        },
+        {
+          "label": "Røyk: Moto",
+          "labelEn": "Smoke: Moto",
+          "url": "https://csnades.gg/inferno/smokes/moto-from-alt-mid"
+        },
+        {
+          "label": "Røyk: Pit",
+          "labelEn": "Smoke: Pit",
+          "url": "https://csnades.gg/inferno/smokes/pit-from-alt-mid"
+        }
       ]
     },
     {
@@ -267,6 +405,13 @@
         "Walk quietly, no smoke",
         "Two hold banana for sound",
         "Call once you have control"
+      ],
+      "links": [
+        {
+          "label": "Flash: Banana",
+          "labelEn": "Flash: Banana",
+          "url": "https://csnades.gg/inferno/flashbangs/banana-from-t-spawn"
+        }
       ]
     },
     {
@@ -290,6 +435,18 @@
         "Smoke library",
         "Apps flash first",
         "Short goes three seconds later"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Library",
+          "labelEn": "Smoke: Library",
+          "url": "https://csnades.gg/inferno/smokes/library-from-alt-mid"
+        },
+        {
+          "label": "Flash: Short",
+          "labelEn": "Flash: Short",
+          "url": "https://csnades.gg/inferno/flashbangs/short-from-pit"
+        }
       ]
     },
     {
@@ -312,6 +469,13 @@
       "tasksEn": [
         "Molly first if you have one",
         "Don't stop to trade, just push"
+      ],
+      "links": [
+        {
+          "label": "Molly: Banana",
+          "labelEn": "Molly: Banana",
+          "url": "https://csnades.gg/inferno/molotovs/banana-from-top-banana"
+        }
       ]
     },
     {
@@ -333,6 +497,13 @@
       "tasksEn": [
         "Molly early",
         "Fall back to CT once utility is spent"
+      ],
+      "links": [
+        {
+          "label": "Molly: Banana",
+          "labelEn": "Molly: Banana",
+          "url": "https://csnades.gg/inferno/molotovs/banana-from-top-banana"
+        }
       ]
     },
     {
@@ -358,6 +529,13 @@
         "Entry through first doors",
         "Smoke CT after control",
         "One in cat for the pinch"
+      ],
+      "links": [
+        {
+          "label": "Flash: Long Doors",
+          "labelEn": "Flash: Long Doors",
+          "url": "https://csnades.gg/dust2/flashbangs/long-doors-from-outside-long"
+        }
       ]
     },
     {
@@ -383,6 +561,23 @@
         "Popflash off the wall above xbox",
         "Two in lower mid, three in upper tunnels",
         "Go when mid calls control"
+      ],
+      "links": [
+        {
+          "label": "Røyk: XBox",
+          "labelEn": "Smoke: XBox",
+          "url": "https://csnades.gg/dust2/smokes/xbox-from-lower-tunnels"
+        },
+        {
+          "label": "Røyk: CT Spawn",
+          "labelEn": "Smoke: CT Spawn",
+          "url": "https://csnades.gg/dust2/smokes/ct-spawn-from-a-ramp"
+        },
+        {
+          "label": "Røyk: Tunnels Entry",
+          "labelEn": "Smoke: Tunnels Entry",
+          "url": "https://csnades.gg/dust2/smokes/tunnels-entry-from-upper-tunnels"
+        }
       ]
     },
     {
@@ -406,6 +601,18 @@
         "Smoke xbox for cat",
         "Long takes doors at the same time",
         "Flash onto site from short"
+      ],
+      "links": [
+        {
+          "label": "Røyk: XBox",
+          "labelEn": "Smoke: XBox",
+          "url": "https://csnades.gg/dust2/smokes/xbox-from-lower-tunnels"
+        },
+        {
+          "label": "Flash: Short",
+          "labelEn": "Flash: Short",
+          "url": "https://csnades.gg/dust2/flashbangs/short-from-catwalk"
+        }
       ]
     },
     {
@@ -429,6 +636,13 @@
       "tasksEn": [
         "Flash before entry",
         "Plant behind door, not in the open"
+      ],
+      "links": [
+        {
+          "label": "Flash: B Site",
+          "labelEn": "Flash: B Site",
+          "url": "https://csnades.gg/dust2/flashbangs/b-site-from-upper-tunnels"
+        }
       ]
     },
     {
@@ -448,7 +662,8 @@
       "tasksEn": [
         "Nobody peeks without a trade",
         "Call everything you hear"
-      ]
+      ],
+      "links": []
     },
     {
       "map": "Dust II",
@@ -464,7 +679,8 @@
       ],
       "status": "ready",
       "tasks": [],
-      "tasksEn": []
+      "tasksEn": [],
+      "links": []
     },
     {
       "map": "Nuke",
@@ -487,6 +703,33 @@
         "Smoke heaven and garage",
         "Two hold ramp against rotation",
         "Three drop to B"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Heaven",
+          "labelEn": "Smoke: Heaven",
+          "url": "https://csnades.gg/nuke/smokes/heaven-from-silo"
+        },
+        {
+          "label": "Røyk: Garage",
+          "labelEn": "Smoke: Garage",
+          "url": "https://csnades.gg/nuke/smokes/garage-from-outside-t-spawn"
+        },
+        {
+          "label": "Røyk: Ramp",
+          "labelEn": "Smoke: Ramp",
+          "url": "https://csnades.gg/nuke/smokes/ramp-from-trophy-a"
+        },
+        {
+          "label": "Røyk: Outside Garage",
+          "labelEn": "Smoke: Outside Garage",
+          "url": "https://csnades.gg/nuke/smokes/outside-garage-from-outside-t-spawn"
+        },
+        {
+          "label": "Røyk: Secret Close",
+          "labelEn": "Smoke: Secret Close",
+          "url": "https://csnades.gg/nuke/smokes/secret-close-from-outside-t-spawn"
+        }
       ]
     },
     {
@@ -510,6 +753,18 @@
         "Molly the ramp corner",
         "Smoke heaven",
         "Flash over for entry"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Heaven",
+          "labelEn": "Smoke: Heaven",
+          "url": "https://csnades.gg/nuke/smokes/heaven-from-silo"
+        },
+        {
+          "label": "Flash: Ramp",
+          "labelEn": "Flash: Ramp",
+          "url": "https://csnades.gg/nuke/flashbangs/ramp-from-trophy"
+        }
       ]
     },
     {
@@ -532,6 +787,18 @@
       "tasksEn": [
         "No stopping, no smoke",
         "First man takes hut, second takes squeaky"
+      ],
+      "links": [
+        {
+          "label": "Flash: Hut",
+          "labelEn": "Flash: Hut",
+          "url": "https://csnades.gg/nuke/flashbangs/hut-from-lobby"
+        },
+        {
+          "label": "Røyk: Squeaky",
+          "labelEn": "Smoke: Squeaky",
+          "url": "https://csnades.gg/nuke/smokes/squeaky-from-heaven"
+        }
       ]
     },
     {
@@ -553,6 +820,13 @@
         "Two in lobby",
         "Two outside",
         "One holds silo for flank info"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Outside Garage",
+          "labelEn": "Smoke: Outside Garage",
+          "url": "https://csnades.gg/nuke/smokes/outside-garage-from-outside-t-spawn"
+        }
       ]
     },
     {
@@ -568,7 +842,14 @@
       ],
       "status": "ready",
       "tasks": [],
-      "tasksEn": []
+      "tasksEn": [],
+      "links": [
+        {
+          "label": "Røyk: Outside Garage",
+          "labelEn": "Smoke: Outside Garage",
+          "url": "https://csnades.gg/nuke/smokes/outside-garage-from-outside-t-spawn"
+        }
+      ]
     },
     {
       "map": "Ancient",
@@ -592,6 +873,13 @@
         "Smoke toward donut",
         "Two push mid",
         "Three wait for the split call"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Donut",
+          "labelEn": "Smoke: Donut",
+          "url": "https://csnades.gg/ancient/smokes/donut-from-t-mid"
+        }
       ]
     },
     {
@@ -615,6 +903,18 @@
         "Smoke donut and CT",
         "Molly behind temple",
         "Entry after a flash from main"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Temple",
+          "labelEn": "Smoke: Temple",
+          "url": "https://csnades.gg/ancient/smokes/temple-from-outside-a"
+        },
+        {
+          "label": "Røyk: Donut",
+          "labelEn": "Smoke: Donut",
+          "url": "https://csnades.gg/ancient/smokes/donut-from-t-mid"
+        }
       ]
     },
     {
@@ -638,6 +938,13 @@
         "Two take cave",
         "Smoke the CT side of B",
         "Three go lane on the call"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Cave",
+          "labelEn": "Smoke: Cave",
+          "url": "https://csnades.gg/ancient/smokes/cave-from-ruins"
+        }
       ]
     },
     {
@@ -659,6 +966,13 @@
         "One in cave",
         "Two in mid",
         "Two toward A main"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Cave",
+          "labelEn": "Smoke: Cave",
+          "url": "https://csnades.gg/ancient/smokes/cave-from-ruins"
+        }
       ]
     },
     {
@@ -674,7 +988,8 @@
       ],
       "status": "ready",
       "tasks": [],
-      "tasksEn": []
+      "tasksEn": [],
+      "links": []
     },
     {
       "map": "Anubis",
@@ -698,6 +1013,18 @@
         "Smoke connector",
         "Two across bridge",
         "Three wait in water"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Connector",
+          "labelEn": "Smoke: Connector",
+          "url": "https://csnades.gg/anubis/smokes/connector-from-mid-doors"
+        },
+        {
+          "label": "Røyk: Bridge",
+          "labelEn": "Smoke: Bridge",
+          "url": "https://csnades.gg/anubis/smokes/bridge-from-ct-spawn"
+        }
       ]
     },
     {
@@ -721,6 +1048,18 @@
         "Smoke heaven",
         "Smoke connector",
         "Flash onto site"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Connector",
+          "labelEn": "Smoke: Connector",
+          "url": "https://csnades.gg/anubis/smokes/connector-from-mid-doors"
+        },
+        {
+          "label": "Røyk: Heaven",
+          "labelEn": "Smoke: Heaven",
+          "url": "https://csnades.gg/anubis/smokes/heaven-from-door"
+        }
       ]
     },
     {
@@ -744,6 +1083,18 @@
         "Smoke window",
         "Two in canals, three in street",
         "Go on the same count"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Window",
+          "labelEn": "Smoke: Window",
+          "url": "https://csnades.gg/anubis/smokes/window-from-t-spawn"
+        },
+        {
+          "label": "Røyk: Canals",
+          "labelEn": "Smoke: Canals",
+          "url": "https://csnades.gg/anubis/smokes/canals-from-ct-spawn"
+        }
       ]
     },
     {
@@ -765,7 +1116,8 @@
         "Two in water",
         "Two in street",
         "One holds A main"
-      ]
+      ],
+      "links": []
     },
     {
       "map": "Anubis",
@@ -786,7 +1138,8 @@
       "tasksEn": [
         "Flash first",
         "Fall back after first contact regardless"
-      ]
+      ],
+      "links": []
     },
     {
       "map": "Cache",
@@ -809,7 +1162,8 @@
         "Smoke toward CT",
         "Two hold mid",
         "Three in from checkers"
-      ]
+      ],
+      "links": []
     },
     {
       "map": "Cache",
@@ -832,6 +1186,13 @@
         "Smoke CT and heaven",
         "Molly truck",
         "Entry from highway"
+      ],
+      "links": [
+        {
+          "label": "Røyk: Heaven",
+          "labelEn": "Smoke: Heaven",
+          "url": "https://csnades.gg/cache/smokes/heaven-from-b-main"
+        }
       ]
     },
     {
@@ -854,7 +1215,8 @@
       "tasksEn": [
         "Flash in",
         "Plant behind the boxes"
-      ]
+      ],
+      "links": []
     },
     {
       "map": "Cache",
@@ -875,7 +1237,8 @@
         "Two mid",
         "Two A main",
         "One B for sound"
-      ]
+      ],
+      "links": []
     },
     {
       "map": "Cache",
@@ -891,7 +1254,9 @@
       ],
       "status": "ready",
       "tasks": [],
-      "tasksEn": []
+      "tasksEn": [],
+      "links": []
     }
-  ]
+  ],
+  "lineupSource": "https://csnades.gg/"
 }

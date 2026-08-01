@@ -1,0 +1,80 @@
+# Lineup-kilde: CSNADES.gg
+
+**Kanonisk kilde for utility-lineups i Strat-boka er [CSNADES.gg](https://csnades.gg/).**
+
+## Hvorfor denne
+
+| Kilde | Dekning | Stabile deep-links | Egnet for AI/auto |
+|---|---|---|---|
+| **CSNADES.gg** | ~1370+ nades (933 smokes m.m.) | `/{map}/{type}/{slug}` | Ja |
+| cs2util.com | God, interaktivt kart | Svakere per-nade URL | Nei |
+| lineups.gg | ~200 | Begrenset | Delvis |
+| csdb.gg | ~118 | Delvis | Delvis |
+
+CSNADES har:
+
+- Per-nade-sider med video + aim-point
+- Forutsigbart URL-mønster
+- Combinations for multi-smoke executes
+- Offentlige kart vi bruker: Dust II, Mirage, Inferno, Nuke, Ancient, Anubis, Cache
+
+## URL-mønster
+
+```
+https://csnades.gg/{map}/{type}/{slug}
+```
+
+- **map:** `dust2` | `mirage` | `inferno` | `nuke` | `ancient` | `anubis` | `cache`
+- **type:** `smokes` | `flashbangs` | `molotovs` | `hegrenades` | `combinations`
+- **slug:** `{landing}-from-{throw-spot}` (evt. `-b`, `-2`, … for varianter)
+
+Eksempler:
+
+- https://csnades.gg/mirage/smokes/ticket-booth-from-a-ramp
+- https://csnades.gg/dust2/smokes/ct-spawn-from-xbox
+- https://csnades.gg/inferno/molotovs/… (se katalogen)
+
+Kartnavn i appen → slug: `Dust II` → `dust2`.
+
+## Lokal katalog
+
+`src/csnades-catalog.json` er et snapshot av offentlige CSNADES-sider (~566 nades for våre sju kart).
+
+`src/lineupMatch.js` foreslår lenker ut fra callout + tasks (norsk/engelsk).
+
+## Når Claude / ChatGPT lager nye strats
+
+1. Skriv tasks med **konkrete landing-spots** (ticket booth, jungle, xbox, banana, heaven, …).
+2. Sett `links` til konkrete CSNADES-URL-er fra mønsteret over, eller la feltet stå tomt — appen foreslår da automatisk ved lagring.
+3. Bruk **ikke** andre lineup-domener med mindre CSNADES mangler naden.
+4. Foretrekk én kanonisk variant per landing (unngå `-b`/`-2` med mindre laget har en bestemt preferanse).
+5. For executes med flere røyker: lenk hver røyk, eller en `combinations/`-side hvis den finnes.
+
+Eksempel-payload:
+
+```json
+{
+  "map": "Mirage",
+  "side": "T",
+  "site": "a",
+  "callout": "Trippel A",
+  "calloutEn": "Triple A",
+  "tasks": ["Røyk ticket booth", "Røyk jungle", "Røyk stairs"],
+  "tasksEn": ["Smoke ticket booth", "Smoke jungle", "Smoke stairs"],
+  "links": [
+    {
+      "label": "Røyk: Ticket Booth",
+      "labelEn": "Smoke: Ticket Booth",
+      "url": "https://csnades.gg/mirage/smokes/ticket-booth-from-a-ramp"
+    }
+  ]
+}
+```
+
+## Oppdatere katalogen
+
+Last ned kartsidene fra CSNADES på nytt og regenerer `csnades-catalog.json` når kart patches endrer lineups. Sjekk alltid at URL-ene svarer 200.
+
+## Designregel
+
+Lineups er **forberedelse**. Kamp-fanen viser bare små lenke-chips. Ikke embed video i live-calleren.
