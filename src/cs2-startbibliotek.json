@@ -1,0 +1,897 @@
+{
+  "name": "Startbibliotek / Starter library",
+  "version": 1,
+  "note": "Enkle, velprovde strats for CS2 active duty. Rediger fritt. Importeres i appen under Boka > Kart, deling og nullstilling > Legg inn.",
+  "maps": [
+    "Dust II",
+    "Mirage",
+    "Inferno",
+    "Nuke",
+    "Ancient",
+    "Anubis",
+    "Cache"
+  ],
+  "strats": [
+    {
+      "map": "Mirage",
+      "side": "T",
+      "site": "a",
+      "callout": "Trippel A",
+      "calloutEn": "Triple A",
+      "description": "Standard A-take bak tre røyker. Alt kastes samtidig, så går dere inn samlet.",
+      "descriptionEn": "Standard A take behind three smokes. Everything lands at once, then you enter together.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk 1: CT / ticket booth",
+        "Røyk 2: Jungle",
+        "Røyk 3: Stairs",
+        "Molly firebox, entry gjennom Palace",
+        "Siste mann holder Ramp mot Con"
+      ],
+      "tasksEn": [
+        "Smoke 1: CT / ticket booth",
+        "Smoke 2: Jungle",
+        "Smoke 3: Stairs",
+        "Molly firebox, entry through Palace",
+        "Last man holds Ramp for Con"
+      ]
+    },
+    {
+      "map": "Mirage",
+      "side": "T",
+      "site": "b",
+      "callout": "Fire i marked",
+      "calloutEn": "Four in market",
+      "description": "B-execute som stenger alle vinkler. Kreves fire røyker, så kun på full buy.",
+      "descriptionEn": "B execute that closes every angle. Needs four smokes, so full buy only.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk market window og market door",
+        "To røyker på catwalk",
+        "Molly van",
+        "Entry gjennom apps, ikke short"
+      ],
+      "tasksEn": [
+        "Smoke market window and market door",
+        "Two smokes on catwalk",
+        "Molly van",
+        "Entry through apps, not short"
+      ]
+    },
+    {
+      "map": "Mirage",
+      "side": "T",
+      "site": "mid",
+      "callout": "Ta midt",
+      "calloutEn": "Take mid",
+      "description": "Røyk window, ta kontroll, og les hva de gir dere. Beslutning tas etter kontakt.",
+      "descriptionEn": "Smoke window, take control, then read what they give you. Decide after contact.",
+      "rounds": [
+        "full",
+        "force"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk window",
+        "Molly connector",
+        "To i top mid, tre venter på call"
+      ],
+      "tasksEn": [
+        "Smoke window",
+        "Molly connector",
+        "Two in top mid, three wait for call"
+      ]
+    },
+    {
+      "map": "Mirage",
+      "side": "T",
+      "site": "a",
+      "callout": "Split Palace",
+      "calloutEn": "Split palace",
+      "description": "Midtkontroll først, deretter Palace og Ramp samtidig. Timingen er alt.",
+      "descriptionEn": "Mid control first, then Palace and Ramp at the same time. Timing is everything.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "To tar kontroll via connector",
+        "Tre samler seg i Palace",
+        "Gå på telling fra tre"
+      ],
+      "tasksEn": [
+        "Two take control via connector",
+        "Three stack in Palace",
+        "Go on a count of three"
+      ]
+    },
+    {
+      "map": "Mirage",
+      "side": "T",
+      "site": "default",
+      "callout": "Spre og les",
+      "calloutEn": "Spread and read",
+      "description": "En til hvert område, samle info i 30 sekunder, så kaller jeg. Ingen dueller uten trade.",
+      "descriptionEn": "One to each area, gather info for 30 seconds, then I call. No duels without a trade.",
+      "rounds": [],
+      "status": "ready",
+      "tasks": [
+        "En i apps",
+        "En i palace",
+        "To i midt",
+        "En holder ramp"
+      ],
+      "tasksEn": [
+        "One in apps",
+        "One in palace",
+        "Two in mid",
+        "One holds ramp"
+      ]
+    },
+    {
+      "map": "Mirage",
+      "side": "T",
+      "site": "b",
+      "callout": "Rush B",
+      "calloutEn": "Rush B",
+      "description": "Alle fem gjennom apps med en gang. Fungerer fordi ingen forventer det i eco.",
+      "descriptionEn": "All five through apps immediately. Works because nobody expects it on eco.",
+      "rounds": [
+        "eco",
+        "pistol"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Ingen røyk, bare fart",
+        "Første mann kaster flash inn",
+        "Plant default"
+      ],
+      "tasksEn": [
+        "No smoke, just speed",
+        "First man throws flash in",
+        "Plant default"
+      ]
+    },
+    {
+      "map": "Mirage",
+      "side": "CT",
+      "site": null,
+      "callout": "Standard oppsett",
+      "calloutEn": "Standard setup",
+      "description": "To A, en midt, to B. Ingen helter, alle spiller for info og rotasjon.",
+      "descriptionEn": "Two A, one mid, two B. No heroes, everyone plays for info and rotation.",
+      "rounds": [
+        "full",
+        "force"
+      ],
+      "status": "ready",
+      "tasks": [],
+      "tasksEn": []
+    },
+    {
+      "map": "Mirage",
+      "side": "CT",
+      "site": null,
+      "callout": "Push connector",
+      "calloutEn": "Push connector",
+      "description": "To presser connector tidlig for info. Trekk tilbake med en gang dere har det.",
+      "descriptionEn": "Two push connector early for info. Fall back the moment you have it.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Flash først",
+        "Trekk uansett utfall etter 15 sek"
+      ],
+      "tasksEn": [
+        "Flash first",
+        "Fall back after 15 sec regardless"
+      ]
+    },
+    {
+      "map": "Inferno",
+      "side": "T",
+      "site": "b",
+      "callout": "Banan og B",
+      "calloutEn": "Banana and B",
+      "description": "Ta banankontroll med utstyr først, så execute. Ikke gå inn uten kontroll.",
+      "descriptionEn": "Take banana control with utility first, then execute. Don't enter without control.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Molly car og sandbags",
+        "Røyk CT og coffins",
+        "Flash over for entry",
+        "En holder mid mot flank"
+      ],
+      "tasksEn": [
+        "Molly car and sandbags",
+        "Smoke CT and coffins",
+        "Flash over for entry",
+        "One holds mid for flank"
+      ]
+    },
+    {
+      "map": "Inferno",
+      "side": "T",
+      "site": "a",
+      "callout": "Apps execute",
+      "calloutEn": "Apps execute",
+      "description": "Klassisk A-take gjennom apartments. Røyk isolerer pit-spilleren.",
+      "descriptionEn": "Classic A take through apartments. Smokes isolate the pit player.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk moto og library",
+        "Molly pit",
+        "Popflash over taket fra apps",
+        "Entry gjennom balcony"
+      ],
+      "tasksEn": [
+        "Smoke moto and library",
+        "Molly pit",
+        "Popflash over the roof from apps",
+        "Entry through balcony"
+      ]
+    },
+    {
+      "map": "Inferno",
+      "side": "T",
+      "site": "mid",
+      "callout": "Second mid",
+      "calloutEn": "Second mid",
+      "description": "Ta second mid stille, så har dere både A og B åpent. Beste posisjon på kartet.",
+      "descriptionEn": "Take second mid quietly, then both A and B stay open. Best position on the map.",
+      "rounds": [
+        "full",
+        "force"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Gå stille, ingen røyk",
+        "To holder banan for lyd",
+        "Kall når dere har kontroll"
+      ],
+      "tasksEn": [
+        "Walk quietly, no smoke",
+        "Two hold banana for sound",
+        "Call once you have control"
+      ]
+    },
+    {
+      "map": "Inferno",
+      "side": "T",
+      "site": "a",
+      "callout": "Split A",
+      "calloutEn": "Split A",
+      "description": "Tre gjennom apps, to gjennom short. Begge sider går på samme telling.",
+      "descriptionEn": "Three through apps, two through short. Both sides go on the same count.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk library",
+        "Apps flash først",
+        "Short går tre sekunder etter"
+      ],
+      "tasksEn": [
+        "Smoke library",
+        "Apps flash first",
+        "Short goes three seconds later"
+      ]
+    },
+    {
+      "map": "Inferno",
+      "side": "T",
+      "site": "b",
+      "callout": "Rush banan",
+      "calloutEn": "Rush banana",
+      "description": "Alle opp banan med en gang. Molly er alt dere trenger på eco.",
+      "descriptionEn": "Everyone up banana immediately. A molly is all you need on eco.",
+      "rounds": [
+        "eco",
+        "pistol"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Molly først hvis dere har",
+        "Ikke stopp for å trade, bare inn"
+      ],
+      "tasksEn": [
+        "Molly first if you have one",
+        "Don't stop to trade, just push"
+      ]
+    },
+    {
+      "map": "Inferno",
+      "side": "CT",
+      "site": null,
+      "callout": "To på banan",
+      "calloutEn": "Two on banana",
+      "description": "To spiller banan aggressivt med utstyr. Sinker T-siden nok til at rotasjoner rekker.",
+      "descriptionEn": "Two play banana aggressively with utility. Slows the T side enough for rotations.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Molly tidlig",
+        "Trekk til CT når utstyret er brukt"
+      ],
+      "tasksEn": [
+        "Molly early",
+        "Fall back to CT once utility is spent"
+      ]
+    },
+    {
+      "map": "Dust II",
+      "side": "T",
+      "site": "a",
+      "callout": "Long kontroll",
+      "calloutEn": "Long control",
+      "description": "Ta long med flash-support, så execute på site. Vinner dere long, vinner dere runden.",
+      "descriptionEn": "Take long with flash support, then execute on site. Win long, win the round.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "To flasher over long doors",
+        "Entry gjennom første doors",
+        "Røyk CT etter kontroll",
+        "En i cat for pinch"
+      ],
+      "tasksEn": [
+        "Two flashes over long doors",
+        "Entry through first doors",
+        "Smoke CT after control",
+        "One in cat for the pinch"
+      ]
+    },
+    {
+      "map": "Dust II",
+      "side": "T",
+      "site": "b",
+      "callout": "Midt til B",
+      "calloutEn": "Mid to B",
+      "description": "Røyk xbox og CT, ta lower mid, gå B gjennom tunnels samtidig.",
+      "descriptionEn": "Smoke xbox and CT, take lower mid, hit B through tunnels at the same time.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk xbox og CT-kryss",
+        "Popflash fra veggen over xbox",
+        "To i lower mid, tre i upper tunnels",
+        "Gå når mid melder kontroll"
+      ],
+      "tasksEn": [
+        "Smoke xbox and CT cross",
+        "Popflash off the wall above xbox",
+        "Two in lower mid, three in upper tunnels",
+        "Go when mid calls control"
+      ]
+    },
+    {
+      "map": "Dust II",
+      "side": "T",
+      "site": "a",
+      "callout": "Short split",
+      "calloutEn": "Short split",
+      "description": "Tre opp cat, to fra long. Trykk fra begge sider samtidig så de ikke rekker å rotere.",
+      "descriptionEn": "Three up cat, two from long. Pressure from both sides so they can't rotate.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk xbox for cat",
+        "Long tar doors samtidig",
+        "Flash inn på site fra short"
+      ],
+      "tasksEn": [
+        "Smoke xbox for cat",
+        "Long takes doors at the same time",
+        "Flash onto site from short"
+      ]
+    },
+    {
+      "map": "Dust II",
+      "side": "T",
+      "site": "b",
+      "callout": "Rush tunnels",
+      "calloutEn": "Rush tunnels",
+      "description": "Fem gjennom upper tunnels. Enkelt, høyt tempo, ingen utstyr nødvendig.",
+      "descriptionEn": "Five through upper tunnels. Simple, high tempo, no utility required.",
+      "rounds": [
+        "eco",
+        "pistol",
+        "force"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Flash inn før entry",
+        "Plant bak door, ikke åpent"
+      ],
+      "tasksEn": [
+        "Flash before entry",
+        "Plant behind door, not in the open"
+      ]
+    },
+    {
+      "map": "Dust II",
+      "side": "T",
+      "site": "default",
+      "callout": "Default spredning",
+      "calloutEn": "Default spread",
+      "description": "To long, to mid, en B. Vi tar plass, hører etter, og bestemmer på 1:15.",
+      "descriptionEn": "Two long, two mid, one B. Take space, listen, decide at 1:15.",
+      "rounds": [],
+      "status": "ready",
+      "tasks": [
+        "Ingen peeker uten trade",
+        "Kall alt dere hører"
+      ],
+      "tasksEn": [
+        "Nobody peeks without a trade",
+        "Call everything you hear"
+      ]
+    },
+    {
+      "map": "Dust II",
+      "side": "CT",
+      "site": null,
+      "callout": "To long, en mid",
+      "calloutEn": "Two long, one mid",
+      "description": "Standard fordeling. Mid holder passivt, long spiller for tid ikke for kill.",
+      "descriptionEn": "Standard split. Mid plays passive, long plays for time not for kills.",
+      "rounds": [
+        "full",
+        "force"
+      ],
+      "status": "ready",
+      "tasks": [],
+      "tasksEn": []
+    },
+    {
+      "map": "Nuke",
+      "side": "T",
+      "site": "b",
+      "callout": "Outside til B",
+      "calloutEn": "Outside to B",
+      "description": "Ta outside-kontroll, så ned i vents eller secret. Krever at noen holder ramp.",
+      "descriptionEn": "Take outside control, then drop through vents or secret. Someone must hold ramp.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk heaven og garage",
+        "To holder ramp mot rotasjon",
+        "Tre ned til B"
+      ],
+      "tasksEn": [
+        "Smoke heaven and garage",
+        "Two hold ramp against rotation",
+        "Three drop to B"
+      ]
+    },
+    {
+      "map": "Nuke",
+      "side": "T",
+      "site": "a",
+      "callout": "Ramp til A",
+      "calloutEn": "Ramp to A",
+      "description": "Press opp ramp med utstyr. Enkel struktur, men krever at alle kaster samtidig.",
+      "descriptionEn": "Push up ramp with utility. Simple structure, but everything must land together.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Molly ramp-hjørnet",
+        "Røyk heaven",
+        "Flash over for entry"
+      ],
+      "tasksEn": [
+        "Molly the ramp corner",
+        "Smoke heaven",
+        "Flash over for entry"
+      ]
+    },
+    {
+      "map": "Nuke",
+      "side": "T",
+      "site": "a",
+      "callout": "Rush hut",
+      "calloutEn": "Rush hut",
+      "description": "Alle gjennom hut og squeaky med en gang. Beste eco-strat på kartet.",
+      "descriptionEn": "Everyone through hut and squeaky immediately. Best eco strat on the map.",
+      "rounds": [
+        "eco",
+        "pistol"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Ingen stopp, ingen røyk",
+        "Første mann tar hut, andre tar squeaky"
+      ],
+      "tasksEn": [
+        "No stopping, no smoke",
+        "First man takes hut, second takes squeaky"
+      ]
+    },
+    {
+      "map": "Nuke",
+      "side": "T",
+      "site": "default",
+      "callout": "Les fra lobby",
+      "calloutEn": "Read from lobby",
+      "description": "Ta lobby og outside stille, hør hvor de er, så bestemmer jeg. Nuke belønner tålmodighet.",
+      "descriptionEn": "Take lobby and outside quietly, listen for them, then I decide. Nuke rewards patience.",
+      "rounds": [],
+      "status": "ready",
+      "tasks": [
+        "To i lobby",
+        "To outside",
+        "En holder silo for flank-info"
+      ],
+      "tasksEn": [
+        "Two in lobby",
+        "Two outside",
+        "One holds silo for flank info"
+      ]
+    },
+    {
+      "map": "Nuke",
+      "side": "CT",
+      "site": null,
+      "callout": "Outside-stack",
+      "calloutEn": "Outside stack",
+      "description": "To spiller outside aggressivt. Nekter dem plassen de trenger for B.",
+      "descriptionEn": "Two play outside aggressively. Denies the space they need for B.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [],
+      "tasksEn": []
+    },
+    {
+      "map": "Ancient",
+      "side": "T",
+      "site": "mid",
+      "callout": "Midtkontroll",
+      "calloutEn": "Mid control",
+      "description": "Ancient handler om midt. Ta det, så åpner begge sites seg av seg selv.",
+      "descriptionEn": "Ancient is about mid. Take it and both sites open up on their own.",
+      "rounds": [
+        "full",
+        "force"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk mot donut",
+        "To presser midt",
+        "Tre venter på split-call"
+      ],
+      "tasksEn": [
+        "Smoke toward donut",
+        "Two push mid",
+        "Three wait for the split call"
+      ]
+    },
+    {
+      "map": "Ancient",
+      "side": "T",
+      "site": "a",
+      "callout": "A execute",
+      "calloutEn": "A execute",
+      "description": "Røyk ned sikten fra donut og CT, gå inn samlet fra main.",
+      "descriptionEn": "Smoke off donut and CT sightlines, enter together from main.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk donut og CT",
+        "Molly bak temple",
+        "Entry etter flash fra main"
+      ],
+      "tasksEn": [
+        "Smoke donut and CT",
+        "Molly behind temple",
+        "Entry after a flash from main"
+      ]
+    },
+    {
+      "map": "Ancient",
+      "side": "T",
+      "site": "b",
+      "callout": "Cave og lane",
+      "calloutEn": "Cave and lane",
+      "description": "Ta cave-kontroll først, så press lane. B faller når begge er dine.",
+      "descriptionEn": "Take cave control first, then push lane. B falls once you own both.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "To tar cave",
+        "Røyk CT-siden av B",
+        "Tre går lane på call"
+      ],
+      "tasksEn": [
+        "Two take cave",
+        "Smoke the CT side of B",
+        "Three go lane on the call"
+      ]
+    },
+    {
+      "map": "Ancient",
+      "side": "T",
+      "site": "default",
+      "callout": "Default Ancient",
+      "calloutEn": "Default Ancient",
+      "description": "Spre og hold plass. Ancient er CT-sidet, så vi tvinger dem til å vise seg først.",
+      "descriptionEn": "Spread and hold space. Ancient favours CT, so make them show themselves first.",
+      "rounds": [],
+      "status": "ready",
+      "tasks": [
+        "En i cave",
+        "To i midt",
+        "To mot A main"
+      ],
+      "tasksEn": [
+        "One in cave",
+        "Two in mid",
+        "Two toward A main"
+      ]
+    },
+    {
+      "map": "Ancient",
+      "side": "CT",
+      "site": null,
+      "callout": "Hold midt",
+      "calloutEn": "Hold mid",
+      "description": "Nekt dem midt så lenge som mulig. Alt annet løser seg hvis midt holder.",
+      "descriptionEn": "Deny mid as long as possible. Everything else works out if mid holds.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [],
+      "tasksEn": []
+    },
+    {
+      "map": "Anubis",
+      "side": "T",
+      "site": "mid",
+      "callout": "Ta bridge",
+      "calloutEn": "Take bridge",
+      "description": "Midt og bridge gir dere begge sites. Anubis er T-sidet, så vær aggressive.",
+      "descriptionEn": "Mid and bridge give you both sites. Anubis favours T, so be aggressive.",
+      "rounds": [
+        "full",
+        "force"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk connector",
+        "To over bridge",
+        "Tre venter i water"
+      ],
+      "tasksEn": [
+        "Smoke connector",
+        "Two across bridge",
+        "Three wait in water"
+      ]
+    },
+    {
+      "map": "Anubis",
+      "side": "T",
+      "site": "a",
+      "callout": "A gjennom palace",
+      "calloutEn": "A through palace",
+      "description": "Røyk heaven og connector, så inn fra palace med flash-support.",
+      "descriptionEn": "Smoke heaven and connector, then in from palace with flash support.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk heaven",
+        "Røyk connector",
+        "Flash inn på site"
+      ],
+      "tasksEn": [
+        "Smoke heaven",
+        "Smoke connector",
+        "Flash onto site"
+      ]
+    },
+    {
+      "map": "Anubis",
+      "side": "T",
+      "site": "b",
+      "callout": "Canals til B",
+      "calloutEn": "Canals to B",
+      "description": "Gå gjennom canals og street samtidig. Krever røyk mot window.",
+      "descriptionEn": "Go through canals and street at the same time. Needs a smoke on window.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk window",
+        "To i canals, tre i street",
+        "Gå på samme telling"
+      ],
+      "tasksEn": [
+        "Smoke window",
+        "Two in canals, three in street",
+        "Go on the same count"
+      ]
+    },
+    {
+      "map": "Anubis",
+      "side": "T",
+      "site": "default",
+      "callout": "Default Anubis",
+      "calloutEn": "Default Anubis",
+      "description": "Ta water og street, hold plassen, og les hvor de har stacket.",
+      "descriptionEn": "Take water and street, hold the space, and read where they've stacked.",
+      "rounds": [],
+      "status": "ready",
+      "tasks": [
+        "To i water",
+        "To i street",
+        "En holder A main"
+      ],
+      "tasksEn": [
+        "Two in water",
+        "Two in street",
+        "One holds A main"
+      ]
+    },
+    {
+      "map": "Anubis",
+      "side": "CT",
+      "site": null,
+      "callout": "Aggressiv midt",
+      "calloutEn": "Aggressive mid",
+      "description": "Anubis er T-sidet, så CT må ta plass først. Press midt tidlig og trekk.",
+      "descriptionEn": "Anubis favours T, so CT must take space first. Push mid early, then fall back.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Flash først",
+        "Trekk etter første kontakt uansett"
+      ],
+      "tasksEn": [
+        "Flash first",
+        "Fall back after first contact regardless"
+      ]
+    },
+    {
+      "map": "Cache",
+      "side": "T",
+      "site": "b",
+      "callout": "Midt til B",
+      "calloutEn": "Mid to B",
+      "description": "Ta midt, så ned i B gjennom checkers. Klassisk Cache-runde.",
+      "descriptionEn": "Take mid, then drop into B through checkers. Classic Cache round.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk mot CT",
+        "To holder midt",
+        "Tre inn fra checkers"
+      ],
+      "tasksEn": [
+        "Smoke toward CT",
+        "Two hold mid",
+        "Three in from checkers"
+      ]
+    },
+    {
+      "map": "Cache",
+      "side": "T",
+      "site": "a",
+      "callout": "A execute",
+      "calloutEn": "A execute",
+      "description": "Røyk ned sikten fra CT og heaven, gå inn fra highway og quad samtidig.",
+      "descriptionEn": "Smoke off CT and heaven sightlines, enter from highway and quad together.",
+      "rounds": [
+        "full"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Røyk CT og heaven",
+        "Molly truck",
+        "Entry fra highway"
+      ],
+      "tasksEn": [
+        "Smoke CT and heaven",
+        "Molly truck",
+        "Entry from highway"
+      ]
+    },
+    {
+      "map": "Cache",
+      "side": "T",
+      "site": "b",
+      "callout": "Rush B",
+      "calloutEn": "Rush B",
+      "description": "Alle fem rett inn. Cache er aim-tungt, så fart slår utstyr på eco.",
+      "descriptionEn": "All five straight in. Cache is aim-heavy, so speed beats utility on eco.",
+      "rounds": [
+        "eco",
+        "pistol"
+      ],
+      "status": "ready",
+      "tasks": [
+        "Flash inn",
+        "Plant bak boksene"
+      ],
+      "tasksEn": [
+        "Flash in",
+        "Plant behind the boxes"
+      ]
+    },
+    {
+      "map": "Cache",
+      "side": "T",
+      "site": "default",
+      "callout": "Default Cache",
+      "calloutEn": "Default Cache",
+      "description": "Spre, ta midt-info, og bestem etter første kontakt. Ingen faste timings.",
+      "descriptionEn": "Spread, gather mid info, decide after first contact. No fixed timings.",
+      "rounds": [],
+      "status": "ready",
+      "tasks": [
+        "To midt",
+        "To A main",
+        "En B for lyd"
+      ],
+      "tasksEn": [
+        "Two mid",
+        "Two A main",
+        "One B for sound"
+      ]
+    },
+    {
+      "map": "Cache",
+      "side": "CT",
+      "site": null,
+      "callout": "Standard oppsett",
+      "calloutEn": "Standard setup",
+      "description": "To A, en midt, to B. Cache belønner enkle crossfires framfor smarte plays.",
+      "descriptionEn": "Two A, one mid, two B. Cache rewards simple crossfires over clever plays.",
+      "rounds": [
+        "full",
+        "force"
+      ],
+      "status": "ready",
+      "tasks": [],
+      "tasksEn": []
+    }
+  ]
+}
