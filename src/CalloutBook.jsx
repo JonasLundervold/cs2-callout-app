@@ -103,6 +103,21 @@ const UI = {
     stratsHeader: (n, m, s) => `${n} strat${n === 1 ? "" : "s"} · ${m} ${s}`,
     includePractice: "Ta med trenings-strats i kamp-utvalget",
     emptyBook: "Tomt her. Legg inn den første straten.",
+    searchPh: "Søk i callouts og oppgaver…",
+    groupA: "A-site",
+    groupB: "B-site",
+    groupMid: "Mid",
+    groupDefault: "Default / annet",
+    groupCT: "CT-oppsett",
+    tasksCount: (n) => (n === 1 ? "1 oppgave" : `${n} oppgaver`),
+    linksCount: (n) => (n === 1 ? "1 lineup" : `${n} lineups`),
+    tapToExpand: "Trykk for detaljer",
+    emptyMatchHint: "Ingen strats i boka ennå. Åpne Boka for å legge til, eller last startbiblioteket.",
+    usingStarter: "Starterbibliotek lastet",
+    restoreStarter: "Last inn manglende starter-strats",
+    replaceStarter: "Erstatt boka med starterbiblioteket",
+    replaceStarterConfirm: "Erstatte hele boka?",
+    yesReplace: "Ja, erstatt",
     allRounds: "alle runder",
     settingsShow: "Kart, deling og startbibliotek",
     settingsHide: "Skjul innstillinger",
@@ -110,8 +125,8 @@ const UI = {
     newMapPh: "Nytt kart",
     add: "Legg til",
     starterLabel: "Startbibliotek",
-    starterDesc: (n) => `${n} enkle strats for alle sju active duty-kart, på norsk og engelsk. Lineup-lenker fra CSNADES.gg.`,
-    loadStarter: "Fyll boka",
+    starterDesc: (n) => `${n} strats klare. Nye installasjoner får dem automatisk. Lineups fra CSNADES.gg.`,
+    loadStarter: "Fyll manglende",
     starterDone: (n) => `La til ${n} strats.`,
     catalogHint: (n) => `${n} CSNADES-lineups i katalogen.`,
     shareLabel: "Del med laget",
@@ -174,6 +189,21 @@ const UI = {
     stratsHeader: (n, m, s) => `${n} strat${n === 1 ? "" : "s"} · ${m} ${s}`,
     includePractice: "Include practice strats in the match pool",
     emptyBook: "Nothing here yet. Add your first strat.",
+    searchPh: "Search callouts and tasks…",
+    groupA: "A site",
+    groupB: "B site",
+    groupMid: "Mid",
+    groupDefault: "Default / other",
+    groupCT: "CT setups",
+    tasksCount: (n) => (n === 1 ? "1 task" : `${n} tasks`),
+    linksCount: (n) => (n === 1 ? "1 lineup" : `${n} lineups`),
+    tapToExpand: "Tap for details",
+    emptyMatchHint: "No strats in the book yet. Open Book to add some, or restore the starter library.",
+    usingStarter: "Starter library loaded",
+    restoreStarter: "Add missing starter strats",
+    replaceStarter: "Replace book with starter library",
+    replaceStarterConfirm: "Replace the whole book?",
+    yesReplace: "Yes, replace",
     allRounds: "all rounds",
     settingsShow: "Maps, sharing and starter library",
     settingsHide: "Hide settings",
@@ -181,8 +211,8 @@ const UI = {
     newMapPh: "New map",
     add: "Add",
     starterLabel: "Starter library",
-    starterDesc: (n) => `${n} simple strats for all seven active duty maps, in Norwegian and English. Lineup links from CSNADES.gg.`,
-    loadStarter: "Fill the book",
+    starterDesc: (n) => `${n} strats ready. New installs get them automatically. Lineups from CSNADES.gg.`,
+    loadStarter: "Add missing",
     starterDone: (n) => `Added ${n} strats.`,
     catalogHint: (n) => `${n} CSNADES lineups in the catalog.`,
     shareLabel: "Share with the team",
@@ -285,9 +315,25 @@ function migrate(s) {
   };
 }
 
+function buildStarterStrats() {
+  return STARTER.strats.map((s) => {
+    const base = migrate({ ...s, id: uid() });
+    if (!base.links.length) {
+      base.links = suggestLineupLinks(base, { side: base.side, limit: 5 });
+    }
+    return base;
+  });
+}
+
+function stratSearchBlob(s) {
+  return [s.callout, s.calloutEn, s.description, s.descriptionEn, ...(s.tasks || []), ...(s.tasksEn || [])]
+    .join(" ")
+    .toLowerCase();
+}
+
 export default function CalloutBook() {
   const [loaded, setLoaded] = useState(false);
-  const [lang, setLang] = useState("no");
+  const [lang, setLang] = useState("en");
   const [maps, setMaps] = useState(DEFAULT_MAPS);
   const [strats, setStrats] = useState([]);
   const [history, setHistory] = useState([]);
@@ -307,7 +353,7 @@ export default function CalloutBook() {
   const timerRef = useRef(null);
 
   const [showForm, setShowForm] = useState(false);
-  const [formLang, setFormLang] = useState("no");
+  const [formLang, setFormLang] = useState("en");
   const [editingId, setEditingId] = useState(null);
   const [fCallout, setFCallout] = useState("");
   const [fCalloutEn, setFCalloutEn] = useState("");
@@ -322,9 +368,11 @@ export default function CalloutBook() {
 
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
+  const [bookQuery, setBookQuery] = useState("");
   const [showSettings, setShowSettings] = useState(false);
   const [newMapName, setNewMapName] = useState("");
   const [confirmReset, setConfirmReset] = useState(false);
+  const [confirmReplaceStarter, setConfirmReplaceStarter] = useState(false);
   const [transferText, setTransferText] = useState("");
   const [transferMsg, setTransferMsg] = useState("");
   const [starterMsg, setStarterMsg] = useState("");
@@ -332,12 +380,16 @@ export default function CalloutBook() {
   const t = UI[lang];
 
   useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
+  useEffect(() => {
     (async () => {
       try {
         const res = await storageGet(STORAGE_KEY);
         if (res && res.value) {
           const data = JSON.parse(res.value);
-          // Alt tolkes ferdig før noe settes, så en halvveis lesing ikke skriver over boka
+          // Parse fully before setting state so a half-read never overwrites the book
           const m = Array.isArray(data.maps) && data.maps.length ? data.maps : DEFAULT_MAPS;
           const s = Array.isArray(data.strats) ? data.strats.map(migrate) : [];
           const h = Array.isArray(data.history) ? data.history : [];
@@ -349,14 +401,22 @@ export default function CalloutBook() {
             setLang(data.lang);
             setFormLang(data.lang);
           }
+        } else {
+          // First visit: English + starter library pre-loaded
+          const starterMaps = Array.isArray(STARTER.maps) && STARTER.maps.length ? STARTER.maps : DEFAULT_MAPS;
+          setMaps(starterMaps);
+          setStrats(buildStarterStrats());
+          setSelectedMap(starterMaps[0]);
+          setLang("en");
+          setFormLang("en");
         }
       } catch (e) {
-        // Ta vare på det ulesbare innholdet før appen lagrer over det
+        // Keep unreadable content before the app persists over it
         try {
           const raw = window.localStorage.getItem(STORAGE_KEY);
           if (raw) window.localStorage.setItem(BACKUP_KEY, raw);
         } catch (_) {
-          // ingenting å redde
+          // nothing to salvage
         }
         setLoadError(true);
       } finally {
@@ -386,6 +446,8 @@ export default function CalloutBook() {
     setSecondsLeft(null);
     clearInterval(timerRef.current);
     setConfirmDelete(null);
+    setBookQuery("");
+    setExpandedId(null);
   }, [selectedMap, selectedSide, siteFilter, roundFilter, includePractice]);
 
   const isT = selectedSide === "T";
@@ -401,6 +463,18 @@ export default function CalloutBook() {
     if (isT && siteFilter !== "all" && s.site !== siteFilter) return false;
     return passesRound(s);
   });
+
+  const bookQueryNorm = bookQuery.trim().toLowerCase();
+  const bookList = onMapSide.filter((s) => !bookQueryNorm || stratSearchBlob(s).includes(bookQueryNorm));
+
+  const bookGroups = isT
+    ? [
+        { id: "a", label: t.groupA, items: bookList.filter((s) => s.site === "a") },
+        { id: "b", label: t.groupB, items: bookList.filter((s) => s.site === "b") },
+        { id: "mid", label: t.groupMid, items: bookList.filter((s) => s.site === "mid") },
+        { id: "default", label: t.groupDefault, items: bookList.filter((s) => !s.site || s.site === "default") },
+      ].filter((g) => g.items.length)
+    : [{ id: "ct", label: t.groupCT, items: bookList }].filter((g) => g.items.length);
 
   const recent = history.filter((h) => h.map === selectedMap && h.side === selectedSide).slice(0, 6);
   const run = recent.slice(0, 5).filter((h) => h.site);
@@ -598,18 +672,22 @@ export default function CalloutBook() {
 
   function loadStarter() {
     const existing = new Set(strats.map(stratKey));
-    const incoming = STARTER.strats
-      .filter((s) => !existing.has(stratKey(s)))
-      .map((s) => {
-        const base = migrate({ ...s, id: uid() });
-        if (!base.links.length) {
-          base.links = suggestLineupLinks(base, { side: base.side, limit: 5 });
-        }
-        return base;
-      });
-    setMaps((prev) => Array.from(new Set([...prev, ...STARTER.maps])));
+    const incoming = buildStarterStrats().filter((s) => !existing.has(stratKey(s)));
+    setMaps((prev) => Array.from(new Set([...prev, ...(STARTER.maps || [])])));
     if (incoming.length) setStrats((prev) => [...prev, ...incoming]);
     setStarterMsg(t.starterDone(incoming.length));
+    setConfirmReplaceStarter(false);
+  }
+
+  function replaceWithStarter() {
+    const starterMaps = Array.isArray(STARTER.maps) && STARTER.maps.length ? STARTER.maps : DEFAULT_MAPS;
+    setMaps(starterMaps);
+    setStrats(buildStarterStrats());
+    setHistory([]);
+    setSelectedMap(starterMaps[0]);
+    setCurrentPick(null);
+    setConfirmReplaceStarter(false);
+    setStarterMsg(t.starterDone(STARTER.strats.length));
   }
 
   function doExport() {
@@ -698,7 +776,7 @@ export default function CalloutBook() {
                 {eyebrow(t.title)}
                 <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                   <div style={{ display: "flex", gap: 2 }}>
-                    {["no", "en"].map((l) => (
+                    {["en", "no"].map((l) => (
                       <button
                         key={l}
                         onClick={() => setLang(l)}
@@ -870,8 +948,12 @@ export default function CalloutBook() {
                   }}
                 >
                   {!currentPick ? (
-                    <p style={{ margin: 0, textAlign: "center", color: C.faint, fontSize: 13 }}>
-                      {eligible.length === 0 ? t.noMatch(selectedMap) : t.inPool(eligible.length)}
+                    <p style={{ margin: 0, textAlign: "center", color: C.faint, fontSize: 13, lineHeight: 1.5 }}>
+                      {strats.length === 0
+                        ? t.emptyMatchHint
+                        : eligible.length === 0
+                          ? t.noMatch(selectedMap)
+                          : t.inPool(eligible.length)}
                     </p>
                   ) : (
                     <>
@@ -1038,7 +1120,7 @@ export default function CalloutBook() {
                       {eyebrow(`${editingId ? t.editStrat : t.newStrat} · ${selectedMap} ${selectedSide}`, { color: sc.accent })}
                       <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
                         <span style={{ fontSize: 10, color: C.faint }}>{t.editingIn}</span>
-                        {["no", "en"].map((l) => (
+                        {["en", "no"].map((l) => (
                           <button
                             key={l}
                             onClick={() => setFormLang(l)}
@@ -1233,106 +1315,136 @@ export default function CalloutBook() {
                 )}
 
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                  {eyebrow(t.stratsHeader(onMapSide.length, selectedMap, selectedSide))}
+                  {eyebrow(t.stratsHeader(bookList.length, selectedMap, selectedSide))}
                   <button onClick={openNew} style={{ ...pill, fontSize: 11, padding: "6px 12px", border: "none", background: sc.soft, color: sc.accent, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
                     <Plus size={13} /> {t.newBtn}
                   </button>
                 </div>
+
+                <input
+                  value={bookQuery}
+                  onChange={(e) => setBookQuery(e.target.value)}
+                  placeholder={t.searchPh}
+                  style={{ ...inputStyle, padding: "10px 12px", fontSize: 14, marginBottom: 10 }}
+                />
 
                 <label style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 14, fontSize: 12, color: C.dim, cursor: "pointer" }}>
                   <input type="checkbox" checked={includePractice} onChange={(e) => setIncludePractice(e.target.checked)} />
                   {t.includePractice}
                 </label>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: 1, marginBottom: 20 }}>
-                  {onMapSide.map((s) => {
-                    const played = s.wins + s.losses;
-                    const open = expandedId === s.id;
-                    const desc = pickText(s, "description", lang);
-                    const tasks = pickTasks(s, lang);
-                    const links = s.links || [];
-                    return (
-                      <div key={s.id} style={{ background: C.panel, borderLeft: `2px solid ${s.status === "practice" ? C.faint : sc.accent}`, padding: "11px 12px" }}>
-                        <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap" }}>
-                              {s.site && (
-                                <span style={{ ...pill, fontSize: 10, padding: "1px 5px", background: sc.soft, color: sc.accent }}>
-                                  {opt(SITES, s.site, lang)}
-                                </span>
-                              )}
-                              <span style={{ fontFamily: COND, fontStretch: "condensed", textTransform: "uppercase", fontWeight: 700, fontSize: 17, letterSpacing: "0.03em", color: C.chalk }}>
-                                {pickText(s, "callout", lang)}
-                              </span>
-                              {s.status === "practice" && (
-                                <span style={{ ...pill, fontSize: 10, padding: "1px 5px", border: `1px solid ${C.line}`, color: C.faint }}>{t.practice}</span>
-                              )}
-                              {links.length > 0 && (
-                                <span style={{ ...pill, fontSize: 10, padding: "1px 5px", border: `1px solid ${C.line}`, color: C.dim }}>{t.openLineups}</span>
-                              )}
-                            </div>
-                            <div style={{ display: "flex", gap: 10, marginTop: 4, fontSize: 11, fontFamily: MONO, color: C.faint }}>
-                              <span>{s.rounds.length ? s.rounds.map((r) => opt(ROUNDS, r, lang)).join(", ") : t.allRounds}</span>
-                              <span>{played ? `${s.wins}–${s.losses}` : "0–0"}</span>
-                            </div>
-                          </div>
-                          <div style={{ display: "flex", gap: 2, flexShrink: 0 }}>
-                            {confirmDelete === s.id ? (
-                              <>
-                                <button onClick={() => { setStrats((p) => p.filter((x) => x.id !== s.id)); setConfirmDelete(null); }} style={{ background: C.panelHi, border: "none", color: C.warn, padding: 6, cursor: "pointer" }}>
-                                  <Check size={13} />
+                <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 20 }}>
+                  {bookGroups.map((group) => (
+                    <div key={group.id}>
+                      {eyebrow(group.label, { marginBottom: 6, color: C.dim })}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {group.items.map((s) => {
+                          const played = s.wins + s.losses;
+                          const open = expandedId === s.id;
+                          const desc = pickText(s, "description", lang);
+                          const tasks = pickTasks(s, lang);
+                          const links = s.links || [];
+                          return (
+                            <div key={s.id} style={{ background: C.panel, borderLeft: `2px solid ${s.status === "practice" ? C.faint : sc.accent}`, padding: "12px 12px" }}>
+                              <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                <button
+                                  onClick={() => setExpandedId(open ? null : s.id)}
+                                  style={{
+                                    flex: 1,
+                                    minWidth: 0,
+                                    background: "transparent",
+                                    border: "none",
+                                    padding: 0,
+                                    textAlign: "left",
+                                    cursor: "pointer",
+                                    color: "inherit",
+                                  }}
+                                >
+                                  <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap" }}>
+                                    <span style={{ fontFamily: COND, fontStretch: "condensed", textTransform: "uppercase", fontWeight: 700, fontSize: 18, letterSpacing: "0.03em", color: C.chalk }}>
+                                      {pickText(s, "callout", lang)}
+                                    </span>
+                                    {s.status === "practice" && (
+                                      <span style={{ ...pill, fontSize: 10, padding: "1px 5px", border: `1px solid ${C.line}`, color: C.faint }}>{t.practice}</span>
+                                    )}
+                                  </div>
+                                  {desc && (
+                                    <p style={{ margin: "6px 0 0", fontSize: 13, color: "#B4BAC2", lineHeight: 1.45 }}>
+                                      {desc}
+                                    </p>
+                                  )}
+                                  <div style={{ display: "flex", gap: 10, marginTop: 6, fontSize: 11, fontFamily: MONO, color: C.faint, flexWrap: "wrap" }}>
+                                    <span>{s.rounds.length ? s.rounds.map((r) => opt(ROUNDS, r, lang)).join(", ") : t.allRounds}</span>
+                                    <span>{played ? `${s.wins}–${s.losses}` : "0–0"}</span>
+                                    {tasks.length > 0 && <span>{t.tasksCount(tasks.length)}</span>}
+                                    {links.length > 0 && <span>{t.linksCount(links.length)}</span>}
+                                    {!open && (tasks.length > 0 || links.length > 0) && <span>{t.tapToExpand}</span>}
+                                  </div>
                                 </button>
-                                <button onClick={() => setConfirmDelete(null)} style={{ background: "transparent", border: "none", color: C.faint, padding: 6, cursor: "pointer" }}>
-                                  <X size={13} />
-                                </button>
-                              </>
-                            ) : (
-                              <>
-                                {(desc || tasks.length > 0 || links.length > 0) && (
-                                  <button onClick={() => setExpandedId(open ? null : s.id)} style={{ background: "transparent", border: "none", color: C.faint, padding: 6, cursor: "pointer" }}>
-                                    {open ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-                                  </button>
-                                )}
-                                <button onClick={() => openEdit(s)} style={{ background: "transparent", border: "none", color: C.faint, padding: 6, cursor: "pointer" }}>
-                                  <Pencil size={13} />
-                                </button>
-                                <button onClick={() => setConfirmDelete(s.id)} style={{ background: "transparent", border: "none", color: C.faint, padding: 6, cursor: "pointer" }}>
-                                  <Trash2 size={13} />
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                        {open && (
-                          <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.line}` }}>
-                            {desc && <p style={{ margin: "0 0 6px", fontSize: 13, color: "#B4BAC2", lineHeight: 1.5 }}>{desc}</p>}
-                            {tasks.map((x, i) => (
-                              <p key={i} style={{ margin: "0 0 2px", fontSize: 12, fontFamily: MONO, color: C.dim }}>
-                                {x}
-                              </p>
-                            ))}
-                            {links.length > 0 && (
-                              <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: tasks.length || desc ? 8 : 0 }}>
-                                {links.map((link, i) => (
-                                  <a
-                                    key={i}
-                                    href={link.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{ fontSize: 12, color: sc.accent, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 5 }}
-                                  >
-                                    <ExternalLink size={12} />
-                                    {pickLinkLabel(link, lang)}
-                                  </a>
-                                ))}
+                                <div style={{ display: "flex", gap: 2, flexShrink: 0 }}>
+                                  {confirmDelete === s.id ? (
+                                    <>
+                                      <button onClick={() => { setStrats((p) => p.filter((x) => x.id !== s.id)); setConfirmDelete(null); }} style={{ background: C.panelHi, border: "none", color: C.warn, padding: 6, cursor: "pointer" }}>
+                                        <Check size={13} />
+                                      </button>
+                                      <button onClick={() => setConfirmDelete(null)} style={{ background: "transparent", border: "none", color: C.faint, padding: 6, cursor: "pointer" }}>
+                                        <X size={13} />
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <button onClick={() => setExpandedId(open ? null : s.id)} style={{ background: "transparent", border: "none", color: C.faint, padding: 6, cursor: "pointer" }} aria-label={t.tapToExpand}>
+                                        {open ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                                      </button>
+                                      <button onClick={() => openEdit(s)} style={{ background: "transparent", border: "none", color: C.faint, padding: 6, cursor: "pointer" }} aria-label={t.editStrat}>
+                                        <Pencil size={13} />
+                                      </button>
+                                      <button onClick={() => setConfirmDelete(s.id)} style={{ background: "transparent", border: "none", color: C.faint, padding: 6, cursor: "pointer" }}>
+                                        <Trash2 size={13} />
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
                               </div>
-                            )}
-                          </div>
-                        )}
+                              {open && (
+                                <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.line}` }}>
+                                  {tasks.length > 0 && (
+                                    <div style={{ borderLeft: `2px solid ${sc.accent}`, paddingLeft: 10, marginBottom: links.length ? 10 : 0 }}>
+                                      {tasks.map((x, i) => (
+                                        <p key={i} style={{ margin: "0 0 3px", fontSize: 13, fontFamily: MONO, color: "#B4BAC2" }}>
+                                          {x}
+                                        </p>
+                                      ))}
+                                    </div>
+                                  )}
+                                  {links.length > 0 && (
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                                      {links.map((link, i) => (
+                                        <a
+                                          key={i}
+                                          href={link.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          style={{ fontSize: 12, color: sc.accent, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 5 }}
+                                        >
+                                          <ExternalLink size={12} />
+                                          {pickLinkLabel(link, lang)}
+                                        </a>
+                                      ))}
+                                    </div>
+                                  )}
+                                  {!tasks.length && !links.length && (
+                                    <p style={{ margin: 0, fontSize: 12, color: C.faint }}>{t.tapToExpand}</p>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
-                    );
-                  })}
-                  {onMapSide.length === 0 && !showForm && (
+                    </div>
+                  ))}
+                  {bookList.length === 0 && !showForm && (
                     <p style={{ textAlign: "center", padding: "28px 0", color: C.faint, fontSize: 13 }}>{t.emptyBook}</p>
                   )}
                 </div>
@@ -1346,9 +1458,26 @@ export default function CalloutBook() {
                     {eyebrow(t.starterLabel, { marginBottom: 6 })}
                     <p style={{ margin: "0 0 8px", fontSize: 12, color: C.dim, lineHeight: 1.5 }}>{t.starterDesc(STARTER.strats.length)}</p>
                     <p style={{ margin: "0 0 8px", fontSize: 11, color: C.faint }}>{t.catalogHint(catalogStats().total)}</p>
-                    <button onClick={loadStarter} style={{ ...pill, fontSize: 11, padding: "8px 14px", border: `1px solid ${sc.accent}`, background: sc.soft, color: sc.accent, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-                      <Download size={13} /> {t.loadStarter}
-                    </button>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      <button onClick={loadStarter} style={{ ...pill, fontSize: 11, padding: "8px 14px", border: `1px solid ${sc.accent}`, background: sc.soft, color: sc.accent, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+                        <Download size={13} /> {t.restoreStarter}
+                      </button>
+                      {confirmReplaceStarter ? (
+                        <>
+                          <button onClick={replaceWithStarter} style={{ ...pill, fontSize: 11, padding: "8px 14px", border: "none", background: C.panelHi, color: C.warn, cursor: "pointer" }}>
+                            {t.yesReplace}
+                          </button>
+                          <button onClick={() => setConfirmReplaceStarter(false)} style={{ ...pill, fontSize: 11, padding: "8px 14px", border: "none", background: "transparent", color: C.faint, cursor: "pointer" }}>
+                            {t.cancel}
+                          </button>
+                        </>
+                      ) : (
+                        <button onClick={() => setConfirmReplaceStarter(true)} style={{ ...pill, fontSize: 11, padding: "8px 14px", border: `1px solid ${C.line}`, background: "transparent", color: C.dim, cursor: "pointer" }}>
+                          {t.replaceStarter}
+                        </button>
+                      )}
+                    </div>
+                    {confirmReplaceStarter && <p style={{ margin: "6px 0 0", fontSize: 11, color: C.warn }}>{t.replaceStarterConfirm}</p>}
                     {starterMsg && <p style={{ margin: "6px 0 0", fontSize: 11, color: C.dim }}>{starterMsg}</p>}
 
                     <div style={{ marginTop: 18, paddingTop: 14, borderTop: `1px solid ${C.line}` }}>

@@ -1,31 +1,33 @@
-# CS2 Strat-boka
+# CS2 Playbook
 
-Minimal Vite/React-app for IGL-er: velg kart, side, site og rundetype, få en rask call under freezetime, logg resultat etter runden.
+Minimal Vite/React app for IGLs: pick map, side, site and round type, get a fast call during freeze time, log the result after the round.
 
-## Kjør lokalt
+English is the default language. Norwegian is available in the header. New installs come with a starter library pre-loaded; you can replace or extend it from Book → settings.
+
+## Run locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Åpne adressen Vite viser i terminalen.
+Open the URL Vite prints.
 
-## Test produksjonsbygget
+## Production build
 
 ```bash
 npm run build
 npm run preview
 ```
 
-Bygget ligger i `dist/`.
+Output is in `dist/`.
 
 ## Hosting (GitHub Pages)
 
-Push til `main` deployer automatisk via GitHub Actions. Se [GITHUB-PAGES.md](./GITHUB-PAGES.md) for oppsett.
+Push to `main` deploys automatically via GitHub Actions. See [GITHUB-PAGES.md](./GITHUB-PAGES.md).
 
 ## Lineups
 
-Utility-lenker bruker [CSNADES.gg](https://csnades.gg/) som kanonisk kilde. Se [LINEUPS.md](./LINEUPS.md) — også ment som kontekst for Claude/ChatGPT når nye strats skrives.
+Utility links use [CSNADES.gg](https://csnades.gg/) as the canonical source. See [LINEUPS.md](./LINEUPS.md) — also intended as context for Claude/ChatGPT when writing new strats.
 
-Data lagres i nettleserens `localStorage`. Det betyr at data er private for hver nettleser/enhet. Bruk eksport/import i appen for å flytte en bok mellom lagkamerater.
+Data is stored in the browser's `localStorage` (per device). Use export/import in the app to move a book between teammates.
