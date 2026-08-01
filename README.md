@@ -28,6 +28,11 @@ Push to `main` deploys automatically via GitHub Actions. See [GITHUB-PAGES.md](.
 
 ## Lineups
 
-Utility links use [CSNADES.gg](https://csnades.gg/) as the canonical source. See [LINEUPS.md](./LINEUPS.md) — also intended as context for Claude/ChatGPT when writing new strats.
+Utility links use [CSNADES.gg](https://csnades.gg/) as the canonical source. See [LINEUPS.md](./LINEUPS.md).
 
-Data is stored in the browser's `localStorage` (per device). Use export/import in the app to move a book between teammates.
+## Content & auth
+
+- [CONTENT.md](./CONTENT.md) — rules for generating starter strats (Claude/ChatGPT).
+- [AUTH.md](./AUTH.md) — login/cloud sync is parked until multi-device sync is required.
+
+Data is stored in the browser's `localStorage` (per device), including match session filters and an active freeze timer. Use **Full backup** in Book → settings when switching devices. Use **Export (team)** to share maps/strats only.

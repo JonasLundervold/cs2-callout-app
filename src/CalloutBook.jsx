@@ -7,6 +7,7 @@ const DEFAULT_MAPS = ["Dust II", "Mirage", "Inferno", "Nuke", "Ancient", "Anubis
 const STORAGE_KEY = "cs2-callout-book";
 const BACKUP_KEY = "cs2-callout-book-skadet";
 const FREEZE_SECONDS = 15;
+const SCHEMA_VERSION = 2;
 
 async function storageGet(key) {
   if (window.storage?.get) return window.storage.get(key, false);
@@ -67,6 +68,22 @@ const UI = {
     all: "Alle",
     call: "Gi meg en call",
     callAgain: "Ny call",
+    pickLabel: "Eller velg selv",
+    useInMatch: "Bruk i kamp",
+    deviceNotice: "Data lagres bare i denne nettleseren. Bruk full backup for sikkerhetskopi.",
+    shareLabel: "Del med laget",
+    shareDesc: "Kun kart og strats — uten historikk eller session.",
+    exportBtn: "Hent ut (lag)",
+    importBtn: "Legg inn",
+    backupLabel: "Full backup",
+    backupDesc: "Inkluderer strats, historikk, språk og session. Bruk for å bytte enhet.",
+    backupExport: "Last ned backup",
+    backupImport: "Gjenopprett backup",
+    backupOk: "Backup gjenopprettet.",
+    transferPh: "Lim inn strats eller backup-JSON her.",
+    exportMsg: "Kopier teksten og send den til laget.",
+    importOk: (n) => `La til ${n} strats.`,
+    importFail: "Fant ikke gyldige strats i teksten.",
     won: "Vunnet",
     lost: "Tapt",
     roundWon: "Runde vunnet",
@@ -129,13 +146,6 @@ const UI = {
     loadStarter: "Fyll manglende",
     starterDone: (n) => `La til ${n} strats.`,
     catalogHint: (n) => `${n} CSNADES-lineups i katalogen.`,
-    shareLabel: "Del med laget",
-    exportBtn: "Hent ut",
-    importBtn: "Legg inn",
-    transferPh: "Lim inn strats fra en lagkamerat her, og trykk Legg inn.",
-    exportMsg: "Kopier teksten og send den til laget.",
-    importOk: (n) => `La til ${n} strats.`,
-    importFail: "Fant ikke gyldige strats i teksten.",
     resetLabel: "Nullstill hele boka",
     deleteAll: "Slette alt?",
     yesDelete: "Ja, slett",
@@ -153,6 +163,22 @@ const UI = {
     all: "All",
     call: "Give me a call",
     callAgain: "New call",
+    pickLabel: "Or pick one",
+    useInMatch: "Use in match",
+    deviceNotice: "Data stays in this browser only. Use a full backup when switching devices.",
+    shareLabel: "Share with the team",
+    shareDesc: "Maps and strats only — no history or session.",
+    exportBtn: "Export (team)",
+    importBtn: "Import",
+    backupLabel: "Full backup",
+    backupDesc: "Includes strats, history, language and session. Use when moving devices.",
+    backupExport: "Download backup",
+    backupImport: "Restore backup",
+    backupOk: "Backup restored.",
+    transferPh: "Paste team share or full backup JSON here.",
+    exportMsg: "Copy the text and send it to your team.",
+    importOk: (n) => `Added ${n} strats.`,
+    importFail: "No valid strats found in that text.",
     won: "Won",
     lost: "Lost",
     roundWon: "Round won",
@@ -215,13 +241,6 @@ const UI = {
     loadStarter: "Add missing",
     starterDone: (n) => `Added ${n} strats.`,
     catalogHint: (n) => `${n} CSNADES lineups in the catalog.`,
-    shareLabel: "Share with the team",
-    exportBtn: "Export",
-    importBtn: "Import",
-    transferPh: "Paste strats from a teammate here, then press Import.",
-    exportMsg: "Copy the text and send it to your team.",
-    importOk: (n) => `Added ${n} strats.`,
-    importFail: "No valid strats found in that text.",
     resetLabel: "Reset the whole book",
     deleteAll: "Delete everything?",
     yesDelete: "Yes, delete",
@@ -350,7 +369,9 @@ export default function CalloutBook() {
   const [logged, setLogged] = useState(null);
 
   const [secondsLeft, setSecondsLeft] = useState(null);
+  const [timerEndsAt, setTimerEndsAt] = useState(null);
   const timerRef = useRef(null);
+  const suppressClearRef = useRef(true);
 
   const [showForm, setShowForm] = useState(false);
   const [formLang, setFormLang] = useState("en");
@@ -379,6 +400,48 @@ export default function CalloutBook() {
 
   const t = UI[lang];
 
+  function startTimer(endMs) {
+    clearInterval(timerRef.current);
+    const end = endMs || Date.now() + FREEZE_SECONDS * 1000;
+    setTimerEndsAt(end);
+    const tick = () => {
+      const left = Math.max(0, Math.ceil((end - Date.now()) / 1000));
+      setSecondsLeft(left);
+      if (left <= 0) clearInterval(timerRef.current);
+    };
+    tick();
+    timerRef.current = setInterval(tick, 200);
+  }
+
+  function clearTimer() {
+    clearInterval(timerRef.current);
+    setSecondsLeft(null);
+    setTimerEndsAt(null);
+  }
+
+  function applySession(session, stratList, mapList) {
+    if (!session || typeof session !== "object") return;
+    suppressClearRef.current = true;
+    if (session.tab === "match" || session.tab === "book") setTab(session.tab);
+    if (session.selectedMap && mapList.includes(session.selectedMap)) setSelectedMap(session.selectedMap);
+    if (session.selectedSide === "T" || session.selectedSide === "CT") setSelectedSide(session.selectedSide);
+    if (typeof session.siteFilter === "string") setSiteFilter(session.siteFilter);
+    if (typeof session.roundFilter === "string") setRoundFilter(session.roundFilter);
+    if (typeof session.includePractice === "boolean") setIncludePractice(session.includePractice);
+
+    const endsAt = typeof session.timerEndsAt === "number" ? session.timerEndsAt : null;
+    const pickId = session.currentPickId;
+    const live = endsAt && endsAt > Date.now();
+    if (pickId && live) {
+      const found = stratList.find((s) => s.id === pickId);
+      if (found) {
+        setCurrentPick({ ...found, calledAt: session.calledAt || Date.now() });
+        setLogged(session.logged === "win" || session.logged === "loss" ? session.logged : null);
+        startTimer(endsAt);
+      }
+    }
+  }
+
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
@@ -389,20 +452,22 @@ export default function CalloutBook() {
         const res = await storageGet(STORAGE_KEY);
         if (res && res.value) {
           const data = JSON.parse(res.value);
-          // Parse fully before setting state so a half-read never overwrites the book
           const m = Array.isArray(data.maps) && data.maps.length ? data.maps : DEFAULT_MAPS;
           const s = Array.isArray(data.strats) ? data.strats.map(migrate) : [];
           const h = Array.isArray(data.history) ? data.history : [];
           setMaps(m);
           setStrats(s);
           setHistory(h);
-          setSelectedMap(m[0]);
           if (data.lang === "en" || data.lang === "no") {
             setLang(data.lang);
             setFormLang(data.lang);
           }
+          if (data.session) {
+            applySession(data.session, s, m);
+          } else {
+            setSelectedMap(m[0]);
+          }
         } else {
-          // First visit: English + starter library pre-loaded
           const starterMaps = Array.isArray(STARTER.maps) && STARTER.maps.length ? STARTER.maps : DEFAULT_MAPS;
           setMaps(starterMaps);
           setStrats(buildStarterStrats());
@@ -411,7 +476,6 @@ export default function CalloutBook() {
           setFormLang("en");
         }
       } catch (e) {
-        // Keep unreadable content before the app persists over it
         try {
           const raw = window.localStorage.getItem(STORAGE_KEY);
           if (raw) window.localStorage.setItem(BACKUP_KEY, raw);
@@ -421,6 +485,10 @@ export default function CalloutBook() {
         setLoadError(true);
       } finally {
         setLoaded(true);
+        // Allow filter-change clears after hydration settles
+        queueMicrotask(() => {
+          suppressClearRef.current = false;
+        });
       }
     })();
     return () => clearInterval(timerRef.current);
@@ -437,14 +505,48 @@ export default function CalloutBook() {
 
   useEffect(() => {
     if (!loaded) return;
-    persist({ maps, strats, history, lang });
-  }, [maps, strats, history, lang, loaded, persist]);
+    persist({
+      version: SCHEMA_VERSION,
+      maps,
+      strats,
+      history,
+      lang,
+      session: {
+        tab,
+        selectedMap,
+        selectedSide,
+        siteFilter,
+        roundFilter,
+        includePractice,
+        currentPickId: currentPick?.id || null,
+        logged: logged || null,
+        timerEndsAt,
+        calledAt: currentPick?.calledAt || null,
+      },
+    });
+  }, [
+    maps,
+    strats,
+    history,
+    lang,
+    loaded,
+    persist,
+    tab,
+    selectedMap,
+    selectedSide,
+    siteFilter,
+    roundFilter,
+    includePractice,
+    currentPick,
+    logged,
+    timerEndsAt,
+  ]);
 
   useEffect(() => {
+    if (suppressClearRef.current) return;
     setCurrentPick(null);
     setLogged(null);
-    setSecondsLeft(null);
-    clearInterval(timerRef.current);
+    clearTimer();
     setConfirmDelete(null);
     setBookQuery("");
     setExpandedId(null);
@@ -492,18 +594,7 @@ export default function CalloutBook() {
     return onMapSide.filter((s) => passesStatus(s) && passesRound(s) && (id === "all" || s.site === id)).length;
   }
 
-  function startTimer() {
-    clearInterval(timerRef.current);
-    setSecondsLeft(FREEZE_SECONDS);
-    const end = Date.now() + FREEZE_SECONDS * 1000;
-    timerRef.current = setInterval(() => {
-      const left = Math.max(0, Math.ceil((end - Date.now()) / 1000));
-      setSecondsLeft(left);
-      if (left <= 0) clearInterval(timerRef.current);
-    }, 200);
-  }
-
-  function pick(excludeId) {
+  function pickRandom(excludeId) {
     let pool = eligible;
     if (excludeId) {
       const f = eligible.filter((s) => s.id !== excludeId);
@@ -520,17 +611,42 @@ export default function CalloutBook() {
     return pool[pool.length - 1];
   }
 
-  function handleCall() {
-    const p = pick(currentPick ? currentPick.id : null);
-    if (!p) return;
+  function commitCall(strat) {
+    if (!strat) return;
     const now = Date.now();
-    setStrats((prev) => prev.map((s) => (s.id === p.id ? { ...s, lastUsed: now, timesUsed: s.timesUsed + 1 } : s)));
-    setCurrentPick({ ...p, calledAt: now });
+    setStrats((prev) => prev.map((s) => (s.id === strat.id ? { ...s, lastUsed: now, timesUsed: s.timesUsed + 1 } : s)));
+    setCurrentPick({ ...strat, calledAt: now });
     setLogged(null);
     setHistory((prev) =>
-      [{ hid: uid(), id: p.id, map: p.map, side: p.side, site: p.site, ts: now, result: null }, ...prev].slice(0, 80)
+      [{ hid: uid(), id: strat.id, map: strat.map, side: strat.side, site: strat.site, ts: now, result: null }, ...prev].slice(0, 80)
     );
     startTimer();
+  }
+
+  function handleCall() {
+    const p = pickRandom(currentPick ? currentPick.id : null);
+    if (!p) return;
+    commitCall(p);
+  }
+
+  function handlePickStrat(strat) {
+    commitCall(strat);
+  }
+
+  function useInMatch(strat) {
+    suppressClearRef.current = true;
+    setShowForm(false);
+    setExpandedId(null);
+    setSelectedMap(strat.map);
+    setSelectedSide(strat.side);
+    if (strat.side === "T" && strat.site) setSiteFilter(strat.site);
+    else setSiteFilter("all");
+    setRoundFilter("all");
+    setTab("match");
+    commitCall(strat);
+    queueMicrotask(() => {
+      suppressClearRef.current = false;
+    });
   }
 
   function logResult(result) {
@@ -691,7 +807,34 @@ export default function CalloutBook() {
   }
 
   function doExport() {
-    setTransferText(JSON.stringify({ maps, strats }, null, 1));
+    setTransferText(JSON.stringify({ version: SCHEMA_VERSION, maps, strats }, null, 1));
+    setTransferMsg(t.exportMsg);
+  }
+
+  function buildFullBackup() {
+    return {
+      version: SCHEMA_VERSION,
+      maps,
+      strats,
+      history,
+      lang,
+      session: {
+        tab,
+        selectedMap,
+        selectedSide,
+        siteFilter,
+        roundFilter,
+        includePractice,
+        currentPickId: currentPick?.id || null,
+        logged: logged || null,
+        timerEndsAt,
+        calledAt: currentPick?.calledAt || null,
+      },
+    };
+  }
+
+  function doBackupExport() {
+    setTransferText(JSON.stringify(buildFullBackup(), null, 1));
     setTransferMsg(t.exportMsg);
   }
 
@@ -699,6 +842,30 @@ export default function CalloutBook() {
     try {
       const data = JSON.parse(transferText);
       if (!Array.isArray(data.strats)) throw new Error("no strats");
+      const isFullBackup = Array.isArray(data.history) || data.session || data.lang;
+
+      if (isFullBackup && (data.history || data.session)) {
+        suppressClearRef.current = true;
+        const m = Array.isArray(data.maps) && data.maps.length ? data.maps : DEFAULT_MAPS;
+        const s = data.strats.map((x) => migrate(x));
+        const h = Array.isArray(data.history) ? data.history : [];
+        setMaps(m);
+        setStrats(s);
+        setHistory(h);
+        if (data.lang === "en" || data.lang === "no") {
+          setLang(data.lang);
+          setFormLang(data.lang);
+        }
+        if (data.session) applySession(data.session, s, m);
+        else setSelectedMap(m[0]);
+        setTransferMsg(t.backupOk);
+        setTransferText("");
+        queueMicrotask(() => {
+          suppressClearRef.current = false;
+        });
+        return;
+      }
+
       const existing = new Set(strats.map(stratKey));
       const incoming = data.strats
         .filter((s) => !existing.has(stratKey(s)))
@@ -719,8 +886,7 @@ export default function CalloutBook() {
     setSelectedMap(DEFAULT_MAPS[0]);
     setCurrentPick(null);
     setLogged(null);
-    clearInterval(timerRef.current);
-    setSecondsLeft(null);
+    clearTimer();
     setConfirmReset(false);
     setStarterMsg("");
   }
@@ -1076,6 +1242,42 @@ export default function CalloutBook() {
                   {currentPick ? t.callAgain : t.call}
                 </button>
 
+                {!currentPick && eligible.length > 0 && (
+                  <div style={{ marginTop: 14 }}>
+                    {eyebrow(t.pickLabel, { marginBottom: 8 })}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {eligible.map((s) => {
+                        const desc = pickText(s, "description", lang);
+                        return (
+                          <button
+                            key={s.id}
+                            onClick={() => handlePickStrat(s)}
+                            style={{
+                              textAlign: "left",
+                              background: C.panel,
+                              border: `1px solid ${C.line}`,
+                              borderLeft: `2px solid ${sc.accent}`,
+                              padding: "10px 12px",
+                              cursor: "pointer",
+                              color: C.chalk,
+                            }}
+                          >
+                            <div style={{ fontFamily: COND, fontStretch: "condensed", textTransform: "uppercase", fontWeight: 700, fontSize: 15, letterSpacing: "0.04em" }}>
+                              {pickText(s, "callout", lang)}
+                              {s.site ? ` · ${opt(SITES, s.site, lang)}` : ""}
+                            </div>
+                            {desc && (
+                              <div style={{ marginTop: 4, fontSize: 12, color: C.dim, lineHeight: 1.4 }}>
+                                {desc}
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {recent.length > 0 && (
                   <div style={{ marginTop: 20 }}>
                     {eyebrow(t.pattern, { marginBottom: 8 })}
@@ -1409,7 +1611,7 @@ export default function CalloutBook() {
                               {open && (
                                 <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.line}` }}>
                                   {tasks.length > 0 && (
-                                    <div style={{ borderLeft: `2px solid ${sc.accent}`, paddingLeft: 10, marginBottom: links.length ? 10 : 0 }}>
+                                    <div style={{ borderLeft: `2px solid ${sc.accent}`, paddingLeft: 10, marginBottom: 10 }}>
                                       {tasks.map((x, i) => (
                                         <p key={i} style={{ margin: "0 0 3px", fontSize: 13, fontFamily: MONO, color: "#B4BAC2" }}>
                                           {x}
@@ -1418,7 +1620,7 @@ export default function CalloutBook() {
                                     </div>
                                   )}
                                   {links.length > 0 && (
-                                    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 10 }}>
                                       {links.map((link, i) => (
                                         <a
                                           key={i}
@@ -1433,9 +1635,21 @@ export default function CalloutBook() {
                                       ))}
                                     </div>
                                   )}
-                                  {!tasks.length && !links.length && (
-                                    <p style={{ margin: 0, fontSize: 12, color: C.faint }}>{t.tapToExpand}</p>
-                                  )}
+                                  <button
+                                    onClick={() => useInMatch(s)}
+                                    style={{
+                                      ...pill,
+                                      width: "100%",
+                                      fontSize: 12,
+                                      padding: "10px 0",
+                                      border: "none",
+                                      background: sc.accent,
+                                      color: C.bg,
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    {t.useInMatch}
+                                  </button>
                                 </div>
                               )}
                             </div>
@@ -1455,6 +1669,8 @@ export default function CalloutBook() {
 
                 {showSettings && (
                   <div style={{ background: C.panel, border: `1px solid ${C.line}`, padding: 14 }}>
+                    <p style={{ margin: "0 0 14px", fontSize: 12, color: C.warn, lineHeight: 1.45 }}>{t.deviceNotice}</p>
+
                     {eyebrow(t.starterLabel, { marginBottom: 6 })}
                     <p style={{ margin: "0 0 8px", fontSize: 12, color: C.dim, lineHeight: 1.5 }}>{t.starterDesc(STARTER.strats.length)}</p>
                     <p style={{ margin: "0 0 8px", fontSize: 11, color: C.faint }}>{t.catalogHint(catalogStats().total)}</p>
@@ -1520,13 +1736,24 @@ export default function CalloutBook() {
                     </div>
 
                     <div style={{ marginTop: 18, paddingTop: 14, borderTop: `1px solid ${C.line}` }}>
-                      {eyebrow(t.shareLabel, { marginBottom: 8 })}
-                      <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+                      {eyebrow(t.shareLabel, { marginBottom: 6 })}
+                      <p style={{ margin: "0 0 8px", fontSize: 11, color: C.faint, lineHeight: 1.4 }}>{t.shareDesc}</p>
+                      <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
                         <button onClick={doExport} style={{ ...pill, flex: 1, fontSize: 11, padding: "8px 0", border: `1px solid ${C.line}`, background: "transparent", color: C.dim, cursor: "pointer" }}>
                           {t.exportBtn}
                         </button>
                         <button onClick={doImport} style={{ ...pill, flex: 1, fontSize: 11, padding: "8px 0", border: `1px solid ${C.line}`, background: "transparent", color: C.dim, cursor: "pointer" }}>
                           {t.importBtn}
+                        </button>
+                      </div>
+                      {eyebrow(t.backupLabel, { marginBottom: 6 })}
+                      <p style={{ margin: "0 0 8px", fontSize: 11, color: C.faint, lineHeight: 1.4 }}>{t.backupDesc}</p>
+                      <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+                        <button onClick={doBackupExport} style={{ ...pill, flex: 1, fontSize: 11, padding: "8px 0", border: `1px solid ${sc.accent}`, background: sc.soft, color: sc.accent, cursor: "pointer" }}>
+                          {t.backupExport}
+                        </button>
+                        <button onClick={doImport} style={{ ...pill, flex: 1, fontSize: 11, padding: "8px 0", border: `1px solid ${C.line}`, background: "transparent", color: C.dim, cursor: "pointer" }}>
+                          {t.backupImport}
                         </button>
                       </div>
                       <textarea value={transferText} onChange={(e) => setTransferText(e.target.value)} rows={4} placeholder={t.transferPh} style={{ ...inputStyle, padding: 9, fontSize: 11, fontFamily: MONO, resize: "none", color: C.dim }} />

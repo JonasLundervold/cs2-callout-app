@@ -42,13 +42,14 @@ Kartnavn i appen → slug: `Dust II` → `dust2`.
 
 `src/lineupMatch.js` foreslår lenker ut fra callout + tasks (norsk/engelsk).
 
-## Når Claude / ChatGPT lager nye strats
+## When Claude / ChatGPT lager nye strats
 
 1. Skriv tasks med **konkrete landing-spots** (ticket booth, jungle, xbox, banana, heaven, …).
 2. Sett `links` til konkrete CSNADES-URL-er fra mønsteret over, eller la feltet stå tomt — appen foreslår da automatisk ved lagring.
 3. Bruk **ikke** andre lineup-domener med mindre CSNADES mangler naden.
 4. Foretrekk én kanonisk variant per landing (unngå `-b`/`-2` med mindre laget har en bestemt preferanse).
 5. For executes med flere røyker: lenk hver røyk, eller en `combinations/`-side hvis den finnes.
+6. Følg også [CONTENT.md](./CONTENT.md) (korte callouts, ≤5 tasks, bilingual).
 
 Eksempel-payload:
 
